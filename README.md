@@ -34,7 +34,7 @@ The third component is a table. This table will contain the categorical variable
 
 The fourth component is a barchart. This chart will compare the continuous variables of the subset of houses. Users can pick a variable to depcit on the barchart. If the house is not represented in the barchart yet, it will be added when clicked on the map. Through a checkbox, users can also remove bars.
 
-The above components fulfill the minimum viable product criterion (and the project requirements). If these are fulfilled, new visualisations and other forms of interactivity can potentially be added.
+The above components fulfill the minimum viable product criterion (and the project requirements). If these are fulfilled, new visualisations and other forms of interactivity can potentially be added. One interesting addition is a colour scale reflecting a variable chosen by the user, which colours the houses on the map accordingly. 
 
 ## Sketch 
 
