@@ -47,9 +47,12 @@ This visualisation provides important insights to consumers. For example, consum
 
 ## Libraries 
 
-* D3
+* D3.v4 
 * Mapbox 
-* Bootstrap 
+* Bootstrap
+* D3 - tip  
+* D3 - Queue 
+* Jquery 
 
 
 
