@@ -38,9 +38,7 @@ The above components fulfill the minimum viable product criterion (and the proje
 
 ## Sketch 
 
-![sketch](doc/sketch.png)
-
-
+![sketch](doc/Sketch.png)
 
 ## Purpose 
 
