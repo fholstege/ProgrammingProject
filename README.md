@@ -4,7 +4,7 @@
 * Student ID: 12002151
 
 To finish my minor in programming, I need to create a programming project. 
-This repository will include my progress and ultimately display the final result. 
+This repository will include my progress and ultimately display the final result. Check out the work so far here: https://fholstege.github.io/ProgrammingProject/
 
 # The project 
 
