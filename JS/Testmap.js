@@ -275,6 +275,14 @@ function update_barchart(data, svg, variable, houses){
     	remove_colour_map(d)
     	remove_colour_scatter(houses)
     })
+    .on("click", function(d){
+    	
+    	var index_value = barchart_data.indexOf(d)
+    	barchart_data.splice(index_value,1)
+    	update_barchart(barchart_data, svg_bar, currentvariable_bar, houses)
+    	remove_colour_map(d)
+
+    })
 
     // add the x Axis
   	svg.append("g")
