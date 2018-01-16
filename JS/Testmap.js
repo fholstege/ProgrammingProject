@@ -1,15 +1,55 @@
 
 // define parameters of barchart
-var margin_bar = {top: 50, right: 40, bottom: 120, left: 60},
-    width_bar = 600 - margin_bar.left - margin_bar.right,
+var margin_bar = {top: 50, right: 60, bottom: 120, left: 60},
+    width_bar = 700 - margin_bar.left - margin_bar.right,
     height_bar = 400 - margin_bar.top - margin_bar.bottom;
+
+// define parameters of the scatterplot
+
+// set the dimensions and margins of the graph
+var margin_scatter = {top: 20, right: 20, bottom: 60, left: 80},
+    width_scatter = 600 - margin_scatter.left - margin_scatter.right,
+    height_scatter = 400 - margin_scatter.top - margin_scatter.bottom;
 
 
 var barchart_data = []
 var variables_bar = ["woonoppervlak", "Aantal kamers", "real_price", "Prijs per m2"]
 var currentvariable_bar = "woonoppervlak"
+var currentvariable_scatter_y = "real_price"
+var currentvariable_scatter_x = "woonoppervlak"
 var variables_table = ["address1", "locality", "Soort.appartement","Tuin", "Soort.dak", "Isolatie", "Energielabel"]
 var table_data = []
+var line_data_x = []
+var line_data_y = []
+var average_data;
+
+
+function moving_average(data, neighbors) {
+  return data.map((val, idx, arr) => {
+    let start = Math.max(0, idx - neighbors), 
+        end = idx + neighbors
+    let subset = arr.slice(start, end + 1)
+    let sum = subset.reduce((a,b) => a + b)
+    return sum / subset.length
+  })
+}
+
+function prepare_average_data(data){
+	line_data_x.length = 0
+	line_data_y.length = 0
+
+	data.forEach(function(d){
+		line_data_y.push(d[currentvariable_scatter_y])
+		line_data_x.push(d[currentvariable_scatter_x])
+	})
+
+	console.log(line_data_x)
+	console.log(line_data_y)
+
+	var average_data = moving_average(line_data_y.sort(), 1)
+	console.log(average_data)
+	return average_data
+}
 
 
 window.onload = function(d){
@@ -25,6 +65,25 @@ var x_bar = d3.scaleBand()
 var y_bar = d3.scaleLinear()
           .range([height_bar, 0]);
 
+// set the ranges of the scatterplot 
+var x_scatter = d3.scaleLinear().range([0, width_scatter]);
+var y_scatter = d3.scaleLinear().range([height_scatter, 0]);
+
+
+// create line
+var curved_line = d3.line()
+    .x(function(d,i){
+
+    	let adjustment = (d3.max(line_data_x) - d3.min(line_data_x))/d3.min(line_data_x)
+    
+    	return x_scatter( i * adjustment + d3.min(line_data_x))
+    })
+    .y(function(d){
+    	return (y_scatter(d))
+    })
+    .curve(d3.curveBasis)
+
+
 // create svg for the barchart 
 	var svg_bar = d3.select("body").append("svg")
     .attr("width", width_bar + margin_bar.left + margin_bar.right)
@@ -32,6 +91,14 @@ var y_bar = d3.scaleLinear()
   	.append("g")
     .attr("transform", 
           "translate(" + margin_bar.left + "," + margin_bar.top + ")");
+
+// create svg for the scatterplot 
+	var svg_scatter = d3.select("body").append("svg")
+	.attr("width", width_scatter + margin_scatter.left + margin_scatter.right)
+    .attr("height", height_scatter + margin_scatter.top + margin_scatter.bottom)
+    .append("g")
+    .attr("transform",
+          "translate(" + margin_scatter.left + "," + margin_scatter.top + ")");
 
 var q = d3.queue()
     .defer(d3.json, "../Data/NicolaasRuychaverstraatUtrecht784362neighboorsdatatest.json")
@@ -47,11 +114,26 @@ function colour_map(data){
 		}
 		else if (barchart_data.indexOf(d) !== -1)
 		{
-			console.log("hallo")
 			return "steelblue"
 		}
 	})
 }
+
+function colour_scatter(data){
+	d3.selectAll("circle")
+		.style("fill", function(d){
+
+			if (d == data)
+			{
+				return "red"
+			}
+			else if (barchart_data.indexOf(d) !== -1)
+			{
+				return "steelblue"
+			}
+		})
+	}
+
 
 
 function colour_barchart(data){
@@ -69,6 +151,18 @@ function colour_barchart(data){
 function remove_colour_map(data){
 	map.selectAll(".marker")
 	.style("background-color", function(d){
+
+		if (barchart_data.indexOf(d) !== -1)
+		{
+			return "steelblue"
+		}
+	})
+}
+
+function remove_colour_scatter(data){
+
+	d3.selectAll("circle")
+	.style("fill", function(d){
 
 		if (barchart_data.indexOf(d) !== -1)
 		{
@@ -99,9 +193,10 @@ function create_table(data){
 
    var table_bar = d3.select("body")
    .append("table")
-   .attr("class", "table table-hover table-bordered")
+   .attr("class", "table table-hover table-bordered table-sm")
 
    var thead = table_bar.append('thead')
+   .attr("class", "thead-dark")
    var	tbody = table_bar.append('tbody');
 
 
@@ -130,10 +225,7 @@ function create_table(data){
 
 }
 
-function update_barchart(data, svg, variable){
-
-	console.log(data)
-	console.log("TEST")
+function update_barchart(data, svg, variable, houses){
 
 	var bars = svg.selectAll(".bar")
 					.remove()
@@ -141,6 +233,7 @@ function update_barchart(data, svg, variable){
 					.data(data)
 	var axis = svg.selectAll(".axis")
 					.remove()
+
 	var text = svg.selectAll(".bar_text")
 					.remove()
 
@@ -173,12 +266,14 @@ function update_barchart(data, svg, variable){
 
     	d3.select(this).style("fill", "red")
     	colour_map(d)
+    	colour_scatter(d)
 
     })
     .on("mouseout", function(d){
 
     	d3.select(this).style("fill", "steelblue")
     	remove_colour_map(d)
+    	remove_colour_scatter(houses)
     })
 
     // add the x Axis
@@ -200,12 +295,79 @@ function update_barchart(data, svg, variable){
 
 }
 
+function update_scatter(data, svg, x_variable, y_variable, average_data){
 
-function create_buttons(){
+
+	  var circles = svg.selectAll("circle")
+	  				.remove()
+	  var axis = svg.selectAll(".axis-scatter")
+					.remove()
+	  var text = svg.selectAll(".scatter-text")
+					.remove()
+	  var path = svg.selectAll(".avg")
+	  				.remove()
+
+	  // Scale the range of the data
+	  x_scatter.domain(d3.extent(data, function(d) { return d[x_variable]; }));
+	  y_scatter.domain([0, d3.max(data, function(d) { return d[y_variable]; })]);
+	      
+	  // Add the scatterplot
+	  svg.selectAll("dot")
+	      .data(data)
+	    .enter().append("circle")
+	      .attr("class", "scatter-circle")
+	      .attr("r", 5)
+	      .attr("stroke", "black")
+	      .attr("cx", function(d) { return x_scatter(d[x_variable]); })
+	      .attr("cy", function(d) { return y_scatter(d[y_variable]); })
+	      .on("mouseover", function(d){
+	      	colour_map(d)
+	      	colour_barchart(d)
+	      	d3.select(this).style("fill", "red")
+	      })
+	      .on("mouseout", function(d){
+	      	remove_colour_map(d)
+	      	remove_colour_barchart(d)
+	      	remove_colour_scatter(data)
+	      })
+
+	  // Add the X Axis
+	  svg.append("g")
+	      .attr("transform", "translate(0," + height_scatter + ")")
+	      .attr("class", "axis-scatter")
+	      .call(d3.axisBottom(x_scatter));
+
+	  // Add the Y Axis
+	  svg.append("g")
+	      .attr("class", "axis-scatter")
+	      .call(d3.axisLeft(y_scatter));
+	 
+    // Add text for y-axis
+	  svg.append("text")
+	  .attr("transform", "translate(-60," +  (height_scatter+margin_scatter.bottom)/2 + ") rotate(-90)")
+	  .attr("class", "scatter-text")
+	  .text(y_variable);
+
+
+	// Add text for x-axis
+	  svg.append("text")
+	  .attr("transform", "translate(" + (width_scatter/2) + ","+  (height_scatter + 30) + ")")
+	  .attr("class", "scatter-text")
+	  .text(x_variable);
+
+	  // create line
+	  svg.append('path')
+		.attr('class', 'avg')
+		.datum(average_data)
+		.attr('d', curved_line)
+	}
+
+
+function create_buttons(houses){
 
 	// create menu to select variable in barchart
   	var button_bar = d3.select("body").append("div")
-      .attr("class", "menu")
+      .attr("class", "menu-bar")
 
     button_bar
     .append("button")
@@ -217,36 +379,119 @@ function create_buttons(){
       .attr("class", "caret")
 
     // create dropdown menu when button is pressed
-  	var menu = button_bar.append("ul")
+  	var menu_bar = button_bar.append("ul")
       .attr("class", "dropdown-menu")
       .attr("role", "menu")
 
 
     // create dropdown menu for button
-  	menu.selectAll("li")
+  	menu_bar.selectAll("li")
       .data(variables_bar)
       .enter().append("li")
           .append("a")
           .attr("class", "m")
+          .attr("id", "option_bar")
           .attr("href", "#")
           .text(function(d){ return d})
           .attr("value", function(d){ return d})
 
     // if option is selected, update graph 
-  	var option = d3.selectAll(".m")
+  	var option = d3.selectAll("#option_bar")
     .on("click", function(){
       // get country clicked by user 
       currentvariable_bar = this.getAttribute("value")
-      update_barchart(barchart_data, svg_bar, currentvariable_bar)
+      update_barchart(barchart_data, svg_bar, currentvariable_bar, houses)
+  })
 
-      
-    })
+
+// create menu to select x variable in barchart
+  	var button_scatter = d3.select("body").append("div")
+      .attr("class", "menu-scatter-x")
+
+    button_scatter
+    .append("button")
+      .attr("type", "button")
+      .attr("id", "scatter")
+      .attr("class", "btn btn-primary dropdown-toggle")
+      .attr("data-toggle", "dropdown")
+      .text("Y-as ")
+      .append("span")
+      .attr("class", "caret")
+
+    // create dropdown menu when button is pressed
+  	var menu_scatter = button_scatter.append("ul")
+      .attr("class", "dropdown-menu")
+      .attr("role", "menu")
+
+
+    // create dropdown menu for button
+  	menu_scatter.selectAll("li")
+      .data(variables_bar)
+      .enter().append("li")
+          .append("a")
+          .attr("class", "m")
+          .attr("id", "option_scatter_y")
+          .attr("href", "#")
+          .text(function(d){ return d})
+          .attr("value", function(d){ return d})
+
+    // if option is selected, update graph 
+  	var option = d3.selectAll("#option_scatter_y")
+    .on("click", function(){
+      // get country clicked by user 
+      currentvariable_scatter_y = this.getAttribute("value")
+      var average_data = prepare_average_data(houses)
+      update_scatter(houses, svg_scatter, currentvariable_scatter_x, currentvariable_scatter_y, average_data)
+  })
+
+
+  // create menu to select y variable in barchart
+  	var button_scatter = d3.select("body").append("div")
+      .attr("class", "menu-scatter-y")
+
+    button_scatter
+    .append("button")
+      .attr("type", "button")
+      .attr("id", "scatter")
+      .attr("class", "btn btn-primary dropdown-toggle")
+      .attr("data-toggle", "dropdown")
+      .text("X-as")
+      .append("span")
+      .attr("class", "caret")
+
+    // create dropdown menu when button is pressed
+  	var menu_scatter = button_scatter.append("ul")
+      .attr("class", "dropdown-menu")
+      .attr("role", "menu")
+
+
+    // create dropdown menu for button
+  	menu_scatter.selectAll("li")
+      .data(variables_bar)
+      .enter().append("li")
+          .append("a")
+          .attr("class", "m")
+          .attr("id", "option_scatter_x")
+          .attr("href", "#")
+          .text(function(d){ return d})
+          .attr("value", function(d){ return d})
+
+    // if option is selected, update graph 
+  	var option = d3.selectAll("#option_scatter_x")
+    .on("click", function(){
+      // get country clicked by user 
+      currentvariable_scatter_x = this.getAttribute("value")
+      var average_data = prepare_average_data(houses)
+      update_scatter(houses, svg_scatter, currentvariable_scatter_x, currentvariable_scatter_y, average_data)
+  })
+
+
+
 }
 
 
-function initialize_charts (error, houses){
 
-	console.log(houses)
+function initialize_charts (error, houses){
 
 	map.selectAll(".marker")
 	.data(houses)
@@ -258,7 +503,7 @@ function initialize_charts (error, houses){
 		{
 			barchart_data.push(d)
 			table_data.push(d) 
-			update_barchart(barchart_data, svg_bar, currentvariable_bar)
+			update_barchart(barchart_data, svg_bar, currentvariable_bar, houses)
 			create_table(table_data)
 
 		}
@@ -267,17 +512,21 @@ function initialize_charts (error, houses){
 
 		colour_map(d)
 		colour_barchart(d)
+		colour_scatter(d)
 	})
 	.on("mouseout", function(d){
 
-		remove_colour_map(d)
 		remove_colour_barchart(d)
+		remove_colour_map(d)
+		remove_colour_scatter(houses)
 
 	})
 
-
+	var average_data = prepare_average_data(houses)
 	create_buttons(houses)
-	update_barchart(barchart_data, svg_bar, currentvariable_bar)
+	update_barchart(barchart_data, svg_bar, currentvariable_bar, houses)
+	update_scatter(houses, svg_scatter, currentvariable_scatter_x, currentvariable_scatter_y, average_data)
+	
 
 
 
