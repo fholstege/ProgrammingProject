@@ -37,17 +37,25 @@ function moving_average(data, neighbors) {
 function prepare_average_data(data){
 	line_data_x.length = 0
 	line_data_y.length = 0
+	var line_data = []
 
 	data.forEach(function(d){
-		line_data_y.push(d[currentvariable_scatter_y])
-		line_data_x.push(d[currentvariable_scatter_x])
+
+		line_data.push({"x": d[currentvariable_scatter_x], "y":d[currentvariable_scatter_y]})
 	})
 
-	console.log(line_data_x)
-	console.log(line_data_y)
+	
+	line_data.sort(function(a, b) {
+    return parseFloat(a.x) - parseFloat(b.x);
+	});
 
-	var average_data = moving_average(line_data_y.sort(), 1)
-	console.log(average_data)
+	line_data.forEach(function(d){
+
+		line_data_x.push(d.x)
+		line_data_y.push(d.y)
+	})
+
+	var average_data = moving_average(line_data_y, 1)
 	return average_data
 }
 
@@ -69,19 +77,6 @@ var y_bar = d3.scaleLinear()
 var x_scatter = d3.scaleLinear().range([0, width_scatter]);
 var y_scatter = d3.scaleLinear().range([height_scatter, 0]);
 
-
-// create line
-var curved_line = d3.line()
-    .x(function(d,i){
-
-    	let adjustment = (d3.max(line_data_x) - d3.min(line_data_x))/d3.min(line_data_x)
-    
-    	return x_scatter( i * adjustment + d3.min(line_data_x))
-    })
-    .y(function(d){
-    	return (y_scatter(d))
-    })
-    .curve(d3.curveBasis)
 
 
 // create svg for the barchart 
@@ -278,7 +273,7 @@ function update_barchart(data, svg, variable, houses){
     .on("click", function(d){
     	
     	var index_value = barchart_data.indexOf(d)
-    	barchart_data.splice(index_value,1)
+    	barchart_data.splice(index_value,3)
     	update_barchart(barchart_data, svg_bar, currentvariable_bar, houses)
     	remove_colour_map(d)
 
@@ -312,7 +307,7 @@ function update_scatter(data, svg, x_variable, y_variable, average_data){
 					.remove()
 	  var text = svg.selectAll(".scatter-text")
 					.remove()
-	  var path = svg.selectAll(".avg")
+	  svg.selectAll(".avg")
 	  				.remove()
 
 	  // Scale the range of the data
@@ -323,11 +318,14 @@ function update_scatter(data, svg, x_variable, y_variable, average_data){
 	  svg.selectAll("dot")
 	      .data(data)
 	    .enter().append("circle")
+	    .transition().duration(1000)
 	      .attr("class", "scatter-circle")
 	      .attr("r", 5)
 	      .attr("stroke", "black")
 	      .attr("cx", function(d) { return x_scatter(d[x_variable]); })
 	      .attr("cy", function(d) { return y_scatter(d[y_variable]); })
+
+	svg.selectAll("circle")
 	      .on("mouseover", function(d){
 	      	colour_map(d)
 	      	colour_barchart(d)
@@ -341,33 +339,58 @@ function update_scatter(data, svg, x_variable, y_variable, average_data){
 
 	  // Add the X Axis
 	  svg.append("g")
+	  .transition().duration(1000)
 	      .attr("transform", "translate(0," + height_scatter + ")")
 	      .attr("class", "axis-scatter")
 	      .call(d3.axisBottom(x_scatter));
 
 	  // Add the Y Axis
 	  svg.append("g")
+	  .transition().duration(1000)
 	      .attr("class", "axis-scatter")
 	      .call(d3.axisLeft(y_scatter));
 	 
     // Add text for y-axis
 	  svg.append("text")
+	  .transition().duration(1000)
 	  .attr("transform", "translate(-60," +  (height_scatter+margin_scatter.bottom)/2 + ") rotate(-90)")
 	  .attr("class", "scatter-text")
 	  .text(y_variable);
 
 
+	  // create line
+
+	  var curved_line = d3.line()
+	  .x(function(d,i){
+
+    	let adjustment = (d3.max(line_data_x) - d3.min(line_data_x))/line_data_x.length
+    	
+    	console.log(i * adjustment + d3.min(line_data_x))
+    	console.log(adjustment)
+    	console.log(i)
+    	console.log(d3.min(line_data_x))
+    
+    	return x_scatter(i * adjustment + d3.min(line_data_x))
+    	})
+      .y(function(d){
+    	return (y_scatter(d))
+      })
+      .curve(d3.curveBasis)
+
+
 	// Add text for x-axis
 	  svg.append("text")
+	  .transition().duration(1000)
 	  .attr("transform", "translate(" + (width_scatter/2) + ","+  (height_scatter + 30) + ")")
 	  .attr("class", "scatter-text")
 	  .text(x_variable);
 
 	  // create line
-	  svg.append('path')
+	  var line = svg.append('path')
 		.attr('class', 'avg')
 		.datum(average_data)
 		.attr('d', curved_line)
+
 	}
 
 
