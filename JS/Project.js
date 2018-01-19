@@ -58,6 +58,19 @@ window.onload = function(d){
 
 		})
 
+
+
+	d3.selectAll(".marker")
+	.data(houses)
+	.style("background-color", function(d){
+
+		if (d.address1 == house[0].address1)
+		{
+			return "yellow"
+		}
+		
+		})
+
 	}
 
 }

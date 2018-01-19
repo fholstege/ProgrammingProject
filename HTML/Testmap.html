@@ -17,11 +17,37 @@
        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
+       <!-- link to package for tooltip -->
+        <script src="../Libraries/d3-tip.js"></script>
+
 
 </head>
 <body>
 
-<iframe id = "map_frame" src="Project.html" width = 40% height = 400> </iframe>
+<div class="container">
+
+  <div class="row">
+
+    <div class="col-lg-6">
+    
+    <iframe id ="map_frame" class = "map" src="Project.html" height = 400 width = 100%> </iframe>
+
+    </div>
+
+    <div class="col-lg-6" id="barchart"></div>
+  
+  </div>
+
+  <div class="row">
+
+    <div class="col-lg-7" id="scatter"></div>
+
+    <div class="col-lg-5" id="table"></div>
+
+  </div>
+
+</div>
+
 
 </body>
 </html>

@@ -1,27 +1,31 @@
 
 // define parameters of barchart
-var margin_bar = {top: 50, right: 60, bottom: 120, left: 60},
+var margin_bar = {top: 60, right: 70, bottom: 120, left: 70},
     width_bar = 700 - margin_bar.left - margin_bar.right,
     height_bar = 400 - margin_bar.top - margin_bar.bottom;
 
 // define parameters of the scatterplot
-
-// set the dimensions and margins of the graph
-var margin_scatter = {top: 20, right: 20, bottom: 60, left: 80},
+var margin_scatter = {top: 30, right: 20, bottom: 60, left:80},
     width_scatter = 600 - margin_scatter.left - margin_scatter.right,
     height_scatter = 400 - margin_scatter.top - margin_scatter.bottom;
 
+// 
+
 
 var barchart_data = []
-var variables_bar = ["woonoppervlak", "Aantal kamers", "real_price", "Prijs per m2"]
-var currentvariable_bar = "woonoppervlak"
+var variables_bar = ["woonoppervlak", "Aantal kamers", "real_price", "Prijs per m2", "Bouwjaar"]
+var variables_scatter_x = ["woonoppervlak", "Aantal kamers", "real_price", "Prijs per m2", "Bouwjaar"]
+var variables_scatter_y = ["woonoppervlak", "Aantal kamers", "real_price", "Prijs per m2"]
+var currentvariable_bar = "Aantal kamers"
 var currentvariable_scatter_y = "real_price"
 var currentvariable_scatter_x = "woonoppervlak"
 var variables_table = ["address1", "locality", "Soort.appartement","Tuin", "Soort.dak", "Isolatie", "Energielabel"]
 var table_data = []
 var line_data_x = []
 var line_data_y = []
+var time_data = []
 var average_data;
+var labels_legend = []
 
 
 function moving_average(data, neighbors) {
@@ -74,13 +78,43 @@ var y_bar = d3.scaleLinear()
           .range([height_bar, 0]);
 
 // set the ranges of the scatterplot 
-var x_scatter = d3.scaleLinear().range([0, width_scatter]);
-var y_scatter = d3.scaleLinear().range([height_scatter, 0]);
+var x_scatter = d3.scaleLinear()
+				  .range([0, width_scatter]);
+var y_scatter = d3.scaleLinear()
+                  .range([height_scatter, 0]);
 
+var parse_time = d3.timeParse("%Y");
+var y_bar_time = d3.scaleTime().range([0, height_bar]);
+
+var x_scatter_time = d3.scaleTime().range([0, width_scatter]);
+
+
+var tip_map = d3.tip()
+      .attr('class', 'd3-tip')
+      .offset([-5, 0])
+      .html(function(d) { console.log("test")
+      	return "<strong>" + d.address1 + "</strong>"})
+
+
+var tip_bar = d3.tip()
+	  .attr('class', 'd3-tip')
+	  .offset([-5,0])
+	  .html(function(d) {
+	  	return "<strong>" + d[currentvariable_bar] + "</strong>"
+	  })
+
+var tip_scatter = d3.tip()
+	  .attr('class', 'd3-tip')
+	  .offset([-5,0])
+	  .html(function(d) {
+	  	return String(currentvariable_scatter_x) + ": " + d[currentvariable_scatter_x] + ", " + 
+	  	       String(currentvariable_scatter_y) + ": " + d[currentvariable_scatter_y]
+	  })
 
 
 // create svg for the barchart 
-	var svg_bar = d3.select("body").append("svg")
+	var svg_bar = d3.select("#barchart").append("svg")
+	.attr("class", "svg_bar")
     .attr("width", width_bar + margin_bar.left + margin_bar.right)
     .attr("height", height_bar + margin_bar.top + margin_bar.bottom)
   	.append("g")
@@ -88,7 +122,8 @@ var y_scatter = d3.scaleLinear().range([height_scatter, 0]);
           "translate(" + margin_bar.left + "," + margin_bar.top + ")");
 
 // create svg for the scatterplot 
-	var svg_scatter = d3.select("body").append("svg")
+	var svg_scatter = d3.select("#scatter").append("svg")
+	.attr("class", "svg-scatter")
 	.attr("width", width_scatter + margin_scatter.left + margin_scatter.right)
     .attr("height", height_scatter + margin_scatter.top + margin_scatter.bottom)
     .append("g")
@@ -97,15 +132,20 @@ var y_scatter = d3.scaleLinear().range([height_scatter, 0]);
 
 var q = d3.queue()
     .defer(d3.json, "../Data/NicolaasRuychaverstraatUtrecht784362neighboorsdatatest.json")
+    .defer(d3.json, "../Data/NicolaasRuychaverstraatUtrecht784362housedatatest.json")
     .await(initialize_charts);
 
-function colour_map(data){
+function colour_map(data, house){
 	map.selectAll(".marker")
 	.style("background-color", function(d){
 
 		if (d == data)
 		{
 			return "red"
+		}
+		else if (d.address1 == house[0].address1)
+		{
+			return "yellow"
 		}
 		else if (barchart_data.indexOf(d) !== -1)
 		{
@@ -114,13 +154,17 @@ function colour_map(data){
 	})
 }
 
-function colour_scatter(data){
-	d3.selectAll("circle")
+function colour_scatter(data, house){
+	d3.selectAll(".scatter-circle")
 		.style("fill", function(d){
 
 			if (d == data)
 			{
 				return "red"
+			}
+			else if (d.address1 == house[0].address1)
+			{
+				return "yellow"
 			}
 			else if (barchart_data.indexOf(d) !== -1)
 			{
@@ -131,7 +175,7 @@ function colour_scatter(data){
 
 
 
-function colour_barchart(data){
+function colour_barchart(data, house){
 
 	d3.selectAll(".bar")
 	.style("fill", function(d){
@@ -140,38 +184,58 @@ function colour_barchart(data){
 		{
 			return "red"
 		}
+		else if (d.address1 == house[0].address1)
+		{
+			return "yellow"
+		}
+		else 
+		{
+			return "steelblue"
+		}
 	})
 }
 
-function remove_colour_map(data){
+function remove_colour_map(data, house){
 	map.selectAll(".marker")
 	.style("background-color", function(d){
 
-		if (barchart_data.indexOf(d) !== -1)
+		if (d.address1 == house[0].address1)
+		{
+			return "yellow"
+		}
+		else if (barchart_data.indexOf(d) !== -1)
 		{
 			return "steelblue"
 		}
 	})
 }
 
-function remove_colour_scatter(data){
+function remove_colour_scatter(data, house){
 
-	d3.selectAll("circle")
+	d3.selectAll(".scatter-circle")
 	.style("fill", function(d){
 
-		if (barchart_data.indexOf(d) !== -1)
+		if (d.address1 == house[0].address1)
+		{
+			return "yellow"
+		}
+		else if (barchart_data.indexOf(d) !== -1)
 		{
 			return "steelblue"
 		}
 	})
 }
 
-function remove_colour_barchart(d){
+function remove_colour_barchart(d, house){
 
 	d3.selectAll(".bar")
 	.style("fill", function(d){
 
-		if (barchart_data.indexOf(d) !== -1)
+		if (d.address1 == house[0].address1)
+		{
+			return "yellow"
+		}
+		else if (barchart_data.indexOf(d) !== -1)
 		{
 			return "steelblue"
 		}
@@ -186,7 +250,7 @@ function create_table(data){
 	.remove()
 	
 
-   var table_bar = d3.select("body")
+   var table_bar = d3.select("#table")
    .append("table")
    .attr("class", "table table-hover table-bordered table-sm")
 
@@ -220,7 +284,7 @@ function create_table(data){
 
 }
 
-function update_barchart(data, svg, variable, houses){
+function update_barchart(data, svg, variable, houses, house){
 
 	var bars = svg.selectAll(".bar")
 					.remove()
@@ -232,6 +296,12 @@ function update_barchart(data, svg, variable, houses){
 	var text = svg.selectAll(".bar_text")
 					.remove()
 
+
+	 // format the data
+	time_data.length = 0
+  	barchart_data.forEach(function(d) {
+      time_data.push(parse_time(d.Bouwjaar));
+  	});
 	
 	svg_bar.append("text")
 	.attr("transform", "translate(-47.5," +  (height_bar+margin_bar.bottom)/2 + ") rotate(-90)")
@@ -243,6 +313,15 @@ function update_barchart(data, svg, variable, houses){
     y_bar.domain([0, d3.max(data, function(d) { return d[variable]; })]);
 
 
+    if (time_data.length > 0)
+    {
+    	var minimum = d3.min(time_data)
+    	minimum.setFullYear(minimum.getFullYear() - 10)
+    	y_bar_time.domain([d3.max(time_data), minimum])	
+    }
+    
+
+
 	svg.selectAll(".bar")
     .data(data)
 	.enter().append("rect")
@@ -251,33 +330,69 @@ function update_barchart(data, svg, variable, houses){
       .attr("class", "bar")
       .attr("x", function(d) { return x_bar(d.address1); })
       .attr("width", x_bar.bandwidth())
-      .attr("y", function(d) { return y_bar(d[variable]); })
+      .attr("y", function(d) { 
+      		
+      		if (variable == "Bouwjaar")
+      		{
+      			return y_bar_time(parse_time(d[variable]))
+      		}
+      		else
+      		{
+      			return y_bar(d[variable]); 	
+      		}	
+      	
+      })
       .attr("height", function(d) { 
 
-      	return height_bar - y_bar(d[variable]); })
+      		if (variable == "Bouwjaar")
+      		{
+      			return height_bar - y_bar_time(parse_time(d[variable]))
+      		}
+      		else 
+      		{
+      			return height_bar - y_bar(d[variable]); 
+      		}	
+
+      })
+      .style("fill", function(d){
+
+      	if (d.address1 == house[0].address1)
+		{
+			return "yellow"
+		}
+      	else
+      	{
+      		return "steelblue"
+      	}
+      })
 
     d3.selectAll("rect")
     .on("mouseover", function(d){ 
 
     	d3.select(this).style("fill", "red")
-    	colour_map(d)
-    	colour_scatter(d)
+    	colour_map(d, house)
+    	colour_scatter(d, house)
+    	var target = document.getElementsByClassName("bar")
+		tip_bar.show(d, target)
 
     })
     .on("mouseout", function(d){
 
-    	d3.select(this).style("fill", "steelblue")
-    	remove_colour_map(d)
-    	remove_colour_scatter(houses)
+    	remove_colour_barchart(d, house)
+    	remove_colour_map(d, house)
+    	remove_colour_scatter(houses, house)
+    	tip_bar.hide()
     })
     .on("click", function(d){
     	
     	var index_value = barchart_data.indexOf(d)
-    	barchart_data.splice(index_value,3)
-    	update_barchart(barchart_data, svg_bar, currentvariable_bar, houses)
-    	remove_colour_map(d)
+    	barchart_data.splice(index_value, 2)
+    	update_barchart(barchart_data, svg_bar, currentvariable_bar, houses, house)
+    	remove_colour_map(d, house)
 
     })
+
+    d3.select(".svg_bar").call(tip_bar)
 
     // add the x Axis
   	svg.append("g")
@@ -291,17 +406,31 @@ function update_barchart(data, svg, variable, houses){
 	    .attr("transform", "rotate(50)")
 	    .style("text-anchor", "start");
 
+
 	// add the y Axis
-  	svg.append("g")
-  	.attr("class", "axis")
-      .call(d3.axisLeft(y_bar))
+	if (variable != "Bouwjaar")
+	{	
+	  	svg.append("g")
+	  	.attr("class", "axis")
+	      .call(d3.axisLeft(y_bar))
+	}
+	else
+	{
+		
+		svg.append("g")
+	  	.attr("class", "axis")
+	      .call(d3.axisLeft(y_bar_time))
+
+
+	}
+
 
 }
 
-function update_scatter(data, svg, x_variable, y_variable, average_data){
+function update_scatter(data, svg, x_variable, y_variable, average_data, house){
 
 
-	  var circles = svg.selectAll("circle")
+	  var circles = svg.selectAll(".scatter-circle")
 	  				.remove()
 	  var axis = svg.selectAll(".axis-scatter")
 					.remove()
@@ -310,9 +439,28 @@ function update_scatter(data, svg, x_variable, y_variable, average_data){
 	  svg.selectAll(".avg")
 	  				.remove()
 
+	   // format the data
+		time_data.length = 0
+	  	data.forEach(function(d) {
+	      time_data.push(parse_time(d.Bouwjaar));
+	  	});
+
 	  // Scale the range of the data
 	  x_scatter.domain(d3.extent(data, function(d) { return d[x_variable]; }));
-	  y_scatter.domain([0, d3.max(data, function(d) { return d[y_variable]; })]);
+	  y_scatter.domain([d3.min(data, function (d){ return d[y_variable]}), 
+	  					d3.max(data, function(d) { return d[y_variable]; })]);
+
+	    if (time_data.length > 0)
+    	{
+	    	x_scatter_time.domain(d3.extent(time_data))
+    	}
+
+
+    	console.log(d3.min(time_data), d3.max(time_data))
+ 
+
+
+    	console.log(x_scatter_time(parse_time(data[0].Bouwjaar)))
 	      
 	  // Add the scatterplot
 	  svg.selectAll("dot")
@@ -322,27 +470,70 @@ function update_scatter(data, svg, x_variable, y_variable, average_data){
 	      .attr("class", "scatter-circle")
 	      .attr("r", 5)
 	      .attr("stroke", "black")
-	      .attr("cx", function(d) { return x_scatter(d[x_variable]); })
+	      .attr("cx", function(d) { 
+
+	      	if (x_variable == "Bouwjaar")
+	      	{
+	      		return x_scatter_time(parse_time(d[x_variable]))
+	      	}
+	      	else
+	      	{
+	      		return x_scatter(d[x_variable])
+	      	}
+	     ; })
 	      .attr("cy", function(d) { return y_scatter(d[y_variable]); })
+	      .style("fill", function(d){ 
+
+	      	if (d.address1 == house[0].address1)
+			{
+				return "yellow"
+			}
+			else 
+			{
+				return "grey"
+			}
+	      })
 
 	svg.selectAll("circle")
 	      .on("mouseover", function(d){
-	      	colour_map(d)
-	      	colour_barchart(d)
+	      	colour_map(d, house)
+	      	colour_barchart(d, house)
 	      	d3.select(this).style("fill", "red")
+
+	      	var target = document.getElementsByClassName("scatter-circle")
+	      	tip_scatter.show(d, target)
 	      })
 	      .on("mouseout", function(d){
-	      	remove_colour_map(d)
-	      	remove_colour_barchart(d)
-	      	remove_colour_scatter(data)
+	      	remove_colour_map(d, house)
+	      	remove_colour_barchart(d, house)
+	      	remove_colour_scatter(data, house)
+	      	tip_scatter.hide()
 	      })
 
-	  // Add the X Axis
+	d3.select(".svg-scatter").call(tip_scatter)
+
+
+
+
+	if (x_variable != "Bouwjaar")
+	{
+		// Add the X Axis
 	  svg.append("g")
 	  .transition().duration(1000)
 	      .attr("transform", "translate(0," + height_scatter + ")")
 	      .attr("class", "axis-scatter")
 	      .call(d3.axisBottom(x_scatter));
+	}
+	else
+	{
+		// Add the X Axis
+	  svg.append("g")
+	  .transition().duration(1000)
+	      .attr("transform", "translate(0," + height_scatter + ")")
+	      .attr("class", "axis-scatter")
+	      .call(d3.axisBottom(x_scatter_time));
+	}
+	  
 
 	  // Add the Y Axis
 	  svg.append("g")
@@ -364,14 +555,10 @@ function update_scatter(data, svg, x_variable, y_variable, average_data){
 	  .x(function(d,i){
 
     	let adjustment = (d3.max(line_data_x) - d3.min(line_data_x))/line_data_x.length
-    	
-    	console.log(i * adjustment + d3.min(line_data_x))
-    	console.log(adjustment)
-    	console.log(i)
-    	console.log(d3.min(line_data_x))
-    
     	return x_scatter(i * adjustment + d3.min(line_data_x))
-    	})
+    	
+    	
+    })
       .y(function(d){
     	return (y_scatter(d))
       })
@@ -394,7 +581,7 @@ function update_scatter(data, svg, x_variable, y_variable, average_data){
 	}
 
 
-function create_buttons(houses){
+function create_buttons(houses, house){
 
 	// create menu to select variable in barchart
   	var button_bar = d3.select("body").append("div")
@@ -431,7 +618,7 @@ function create_buttons(houses){
     .on("click", function(){
       // get country clicked by user 
       currentvariable_bar = this.getAttribute("value")
-      update_barchart(barchart_data, svg_bar, currentvariable_bar, houses)
+      update_barchart(barchart_data, svg_bar, currentvariable_bar, houses, house)
   })
 
 
@@ -457,7 +644,7 @@ function create_buttons(houses){
 
     // create dropdown menu for button
   	menu_scatter.selectAll("li")
-      .data(variables_bar)
+      .data(variables_scatter_y)
       .enter().append("li")
           .append("a")
           .attr("class", "m")
@@ -472,7 +659,7 @@ function create_buttons(houses){
       // get country clicked by user 
       currentvariable_scatter_y = this.getAttribute("value")
       var average_data = prepare_average_data(houses)
-      update_scatter(houses, svg_scatter, currentvariable_scatter_x, currentvariable_scatter_y, average_data)
+      update_scatter(houses, svg_scatter, currentvariable_scatter_x, currentvariable_scatter_y, average_data, house)
   })
 
 
@@ -498,7 +685,7 @@ function create_buttons(houses){
 
     // create dropdown menu for button
   	menu_scatter.selectAll("li")
-      .data(variables_bar)
+      .data(variables_scatter_x)
       .enter().append("li")
           .append("a")
           .attr("class", "m")
@@ -513,50 +700,92 @@ function create_buttons(houses){
       // get country clicked by user 
       currentvariable_scatter_x = this.getAttribute("value")
       var average_data = prepare_average_data(houses)
-      update_scatter(houses, svg_scatter, currentvariable_scatter_x, currentvariable_scatter_y, average_data)
+      update_scatter(houses, svg_scatter, currentvariable_scatter_x, currentvariable_scatter_y, average_data, house)
   })
 
 
 
 }
 
+function create_legend(data){
+
+	labels_legend.push(data.address1)
+	console.log(labels_legend)
+
+	// attach data for legend
+	var legend = d3.select("body").append("svg")
+	.attr("width", 300)
+    .attr("height", 30)
+    .attr("class", "legend")
+    
+	legend.selectAll("circle")
+	.data(labels_legend)
+	.enter().append("circle")
+	  .attr("class", "legend-circle")
+      .attr("r", 10)
+	  .attr("stroke", "black")
+	  .attr("cx", 15)
+	  .attr("cy", 15)
+	  .style("fill", "yellow")
+
+	legend.selectAll("text")
+	.data(labels_legend)
+	.enter().append("text")
+	.attr("class", "legend-text")
+    .attr("transform", "translate(30, 20)")
+    .text(function(d){return d})
+      
+}
 
 
-function initialize_charts (error, houses){
+
+function initialize_charts (error, houses, house){
+
 
 	map.selectAll(".marker")
 	.data(houses)
 	.on("click", function(d){
 
-		d3.select(this).style("background-color", "steelblue");
+		colour_map(d, house)
 
 		if (barchart_data.indexOf(d) == -1)
 		{
 			barchart_data.push(d)
 			table_data.push(d) 
-			update_barchart(barchart_data, svg_bar, currentvariable_bar, houses)
+			update_barchart(barchart_data, svg_bar, currentvariable_bar, houses, house)
 			create_table(table_data)
 
 		}
 	})
-	.on("mouseover", function(d){
+	.on("mouseover", function(d, i){
 
-		colour_map(d)
-		colour_barchart(d)
-		colour_scatter(d)
+		colour_map(d, house)
+		colour_barchart(d, house)
+		colour_scatter(d, house)
+		var target = doc.getElementsByClassName("marker")
+		tip_map.show(d, target)
+		
 	})
 	.on("mouseout", function(d){
 
-		remove_colour_barchart(d)
-		remove_colour_map(d)
-		remove_colour_scatter(houses)
+		remove_colour_barchart(d, house)
+		remove_colour_map(d, house)
+		remove_colour_scatter(houses, house)
+		tip_map.hide()
 
 	})
 
-	var average_data = prepare_average_data(houses)
-	create_buttons(houses)
-	update_barchart(barchart_data, svg_bar, currentvariable_bar, houses)
-	update_scatter(houses, svg_scatter, currentvariable_scatter_x, currentvariable_scatter_y, average_data)
+	d3.select(".map").call(tip_map)
+
+
+
+	average_data = prepare_average_data(houses)	
+
+
+	create_buttons(houses, house)
+	update_barchart(barchart_data, svg_bar, currentvariable_bar, houses, house)
+	update_scatter(houses, svg_scatter, currentvariable_scatter_x, currentvariable_scatter_y, average_data, house)
+	create_legend(house[0])
 	
 
 
