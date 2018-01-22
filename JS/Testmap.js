@@ -1,15 +1,13 @@
 
 // define parameters of barchart
-var margin_bar = {top: 60, right: 70, bottom: 120, left: 70},
-    width_bar = 700 - margin_bar.left - margin_bar.right,
+var margin_bar = {top: 60, right: 70, bottom: 120, left: 60},
+    width_bar = 600 - margin_bar.left - margin_bar.right,
     height_bar = 400 - margin_bar.top - margin_bar.bottom;
 
 // define parameters of the scatterplot
 var margin_scatter = {top: 30, right: 20, bottom: 60, left:80},
-    width_scatter = 600 - margin_scatter.left - margin_scatter.right,
+    width_scatter = 700 - margin_scatter.left - margin_scatter.right,
     height_scatter = 400 - margin_scatter.top - margin_scatter.bottom;
-
-// 
 
 
 var barchart_data = []
@@ -89,13 +87,6 @@ var y_bar_time = d3.scaleTime().range([0, height_bar]);
 var x_scatter_time = d3.scaleTime().range([0, width_scatter]);
 
 
-var tip_map = d3.tip()
-      .attr('class', 'd3-tip')
-      .offset([-5, 0])
-      .html(function(d) { console.log("test")
-      	return "<strong>" + d.address1 + "</strong>"})
-
-
 var tip_bar = d3.tip()
 	  .attr('class', 'd3-tip')
 	  .offset([-5,0])
@@ -107,7 +98,8 @@ var tip_scatter = d3.tip()
 	  .attr('class', 'd3-tip')
 	  .offset([-5,0])
 	  .html(function(d) {
-	  	return String(currentvariable_scatter_x) + ": " + d[currentvariable_scatter_x] + ", " + 
+	  	return String(d.address1) + ", " +
+	  		   String(currentvariable_scatter_x) + ": " + d[currentvariable_scatter_x] + ", " + 
 	  	       String(currentvariable_scatter_y) + ": " + d[currentvariable_scatter_y]
 	  })
 
@@ -252,7 +244,7 @@ function create_table(data){
 
    var table_bar = d3.select("#table")
    .append("table")
-   .attr("class", "table table-hover table-bordered table-sm")
+   .attr("class", "table table-hover table-bordered table-lg")
 
    var thead = table_bar.append('thead')
    .attr("class", "thead-dark")
@@ -763,7 +755,7 @@ function initialize_charts (error, houses, house){
 		colour_barchart(d, house)
 		colour_scatter(d, house)
 		var target = doc.getElementsByClassName("marker")
-		tip_map.show(d, target)
+		console.log("test")
 		
 	})
 	.on("mouseout", function(d){
@@ -771,13 +763,8 @@ function initialize_charts (error, houses, house){
 		remove_colour_barchart(d, house)
 		remove_colour_map(d, house)
 		remove_colour_scatter(houses, house)
-		tip_map.hide()
 
 	})
-
-	d3.select(".map").call(tip_map)
-
-
 
 	average_data = prepare_average_data(houses)	
 

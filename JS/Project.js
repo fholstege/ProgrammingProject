@@ -11,6 +11,7 @@ window.onload = function(d){
 	.attr("id","map")
 
 
+
 	// load in datasets 
 	var q = d3.queue()
 	.defer(d3.json, "../Data/NicolaasRuychaverstraatUtrecht784362housedatatest.json")
@@ -68,8 +69,9 @@ window.onload = function(d){
 		{
 			return "yellow"
 		}
+	})
 		
-		})
+	
 
 	}
 
