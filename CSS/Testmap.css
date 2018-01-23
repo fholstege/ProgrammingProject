@@ -11,7 +11,7 @@
 }
 
 .table{
- width: 100% !important;
+ width: 50% !important;
  border: 1px;
 }
 
@@ -41,7 +41,6 @@ path {
 	top:400px;
 	left: 60px;
 }
-
 
 
 /* attributes for tooltip */
