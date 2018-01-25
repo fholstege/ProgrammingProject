@@ -20,27 +20,30 @@
        <!-- link to package for tooltip -->
         <script src="../Libraries/d3-tip.js"></script>
 
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+        <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.42.1/mapbox-gl.js'></script>
+        <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.42.1/mapbox-gl.css' rel='stylesheet' />
 
 </head>
 <body>
 
-<div class="container">
+<div class="container-fluid" style="border:1px solid #cecece;">
 
   <div class="row">
 
-    <div class="col-lg-6">
+    <div class="col-lg-6" id="map">
     
-    <iframe id ="map_frame" class = "map" src="Project.html" height = 400 width = 100%> </iframe>
+    <iframe id ="map_frame" class = "map" src="Project.html" height = 350 width = 100%> </iframe>
 
     </div>
 
-    <div class="col-lg-6" id="barchart"></div>
+    <div class="col-lg-6" style="border:1px solid #cecece;" id="barchart"></div>
   
   </div>
 
   <div class="row">
 
-    <div class="col-lg-6" id="scatter"></div>
+    <div class="col-lg-6" style="border:1px solid #cecece;" id="scatter"></div>
 
     <div class="col-lg-6" id="table"></div>
 

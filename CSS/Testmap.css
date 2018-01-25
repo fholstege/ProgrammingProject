@@ -19,15 +19,15 @@
 	fill:grey;
 }
 
-.menu-scatter-x{
+#menu-scatter-x{
 	position:absolute;
-	top: 800px;
+	top: 775px;
 	right: 1100px;
 }
 
-.menu-scatter-y{
+#menu-scatter-y{
 	position:absolute;
-	top: 800px;
+	top: 775px;
 	right: 1000px;
 }
 
@@ -38,7 +38,7 @@ path {
 
 .legend{
 	position:absolute;
-	top:400px;
+	top:365px;
 	left: 60px;
 }
 

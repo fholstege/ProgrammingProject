@@ -1,6 +1,7 @@
 
 var adjustment = 0.05
 var zoom_map = 15
+
 mapboxgl.accessToken = "pk.eyJ1IjoiZmhvbHN0ZWdlIiwiYSI6ImNqYzV6cnE0bTFmd2oycXFzam1hMXRnOGMifQ.WCni1XErq-siMq4Tk0JljQ";
 
 
@@ -14,16 +15,27 @@ window.onload = function(d){
 
 	// load in datasets 
 	var q = d3.queue()
-	.defer(d3.json, "../Data/NicolaasRuychaverstraatUtrecht784362housedatatest.json")
-    .defer(d3.json, "../Data/NicolaasRuychaverstraatUtrecht784362neighboorsdatatest.json")
+	.defer(d3.json, "../Data/ValkreekRotterdam566567neighbours.json")
     .await(makemap);
 
     // Create the map 
-	function makemap(error, house, houses){
+	function makemap(error, houses){
 	  if (error) throw error;
 
-	  // get coordinates of the searched house
-	  var coordinates = [house[0].lon, house[0].lat]
+	  var coordinates = []
+	  var address_searched_house; 
+
+	  houses.forEach(function(d){
+	  	console.log(d.searched_house)
+
+	  	if (d["searched_house"] == true)
+	  	{
+	  		coordinates.push(d.lon, d.lat)
+	  		address_searched_house = d.address1
+
+	  	}
+
+	  })
 
 	  // set bounds of the map 
 	  var bounds = [
@@ -44,33 +56,38 @@ window.onload = function(d){
 	// disable zooming through scrolling, but add navigator for zooming. 
 	map.scrollZoom.disable()
 	map.addControl(new mapboxgl.NavigationControl());
+
+
 	
 	// add houses to the map
 	houses.forEach(function(marker) {
-
 	  	 // create a HTML element for house 
 	  	 var el = document.createElement('div');
 	  	 el.className = 'marker';
 
+	  	 var popup = new mapboxgl.Popup()
+	  	 .setText(marker.address1)
+
 	  	 // make a marker and add to the map
 	  	 new mapboxgl.Marker(el)
 	  	 .setLngLat([marker.lon, marker.lat])
+	  	 .setPopup(popup)
 	  	 .addTo(map);
 
 		})
 
+	//var popup = new mapboxgl.Popup()
 
 
 	d3.selectAll(".marker")
 	.data(houses)
 	.style("background-color", function(d){
 
-		if (d.address1 == house[0].address1)
+		if (d.address1 == address_searched_house)
 		{
 			return "yellow"
 		}
 	})
-		
 	
 
 	}
