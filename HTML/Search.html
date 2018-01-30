@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+
+     <link rel="stylesheet" type="text/css" href="../CSS/Search.css"/>
+
+
+       <script src="../Libraries/jquery-3.2.1.min.js"></script>
+
+       <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+       <!-- link to necessary files for bootstrap --> 
+       <script src="../Libraries/jquery-3.2.1.min.js"></script>
+       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+
+
+</head>
+<body>
+
+
+  <div class="form-group" width="50%">
+    <label for="inputlg">Zoek een huis!</label>
+    <input class="form-control input-lg" id="entry" type="text" placeholder = "vul in: adres huisnummer postcode (bijvoorbeeld, Valkreek 56 3079 AN)">
+  </div>
+
+
+
+
+<button type="submit" form="houseform" value="Submit">Submit</button>
+
+<script>
+
+
+var neighbours;
+var address;
+var adjust = "%20"
+
+String.prototype.splice = function(idx, rem, str) {
+    return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem));
+};
+
+getAddress()
+
+function getAddress(){
+
+	$("button").click(function() {
+		   address = $("#entry").val();
+
+		   for (var i = 0; i < address.length; i++) 
+		   {   
+			   if (address[i] === " ")
+			   {
+			   		address = address.splice(i,1, adjust)
+			   }
+			}
+		
+
+		getData(address)
+		   return false
+	   })
+}
+
+function getData(address){
+
+		$.getJSON("http://198.211.122.91/plumber/houseAvailable?fullAddress=" + address, function(data) {
+		    	
+			    var token = data.token
+			    var houses = axios.get(`http://198.211.122.91/${token}neighbours.json`);
+
+			    houses.then(function(result){ 
+				 	neighbours = result.data
+				 	console.log(neighbours)
+				 	})
+				});
+	}
+
+
+
+
+
+
+
+    
+
+
+
+
+</script>
+
+
+</body>
+</html>
