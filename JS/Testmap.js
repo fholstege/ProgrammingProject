@@ -195,7 +195,7 @@ d3.select("#submitbutton")
     getData(address)
 })
 
-
+initialize_charts()
 
 // after getAddress is finished, call getData  
 function getData(address){
@@ -1133,7 +1133,7 @@ function update_charts(houses){
 	.text("Analyse van " + String(labels_legend))
 
 	text_legend
-    .text(label)
+    .text(labels_legend)
 
         // if option is selected, update graph
   	var option_bar = d3.selectAll("#option_bar")
