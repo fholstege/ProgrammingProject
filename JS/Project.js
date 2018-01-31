@@ -1,5 +1,5 @@
 
-
+// define parameters of the map
 var adjustment = 0.05
 var zoom_map = 15
 
@@ -7,9 +7,10 @@ mapboxgl.accessToken = "pk.eyJ1IjoiZmhvbHN0ZWdlIiwiYSI6ImNqYzV6cnE0bTFmd2oycXFza
 
 window.onload = function(d){
 
-setInterval(function(){
+// check if data has changed
+var check_map = setInterval(function(){
 
-
+	// if data has changed, change the map 
 	if (amplify.store("changed_data") == true)
 	{	
 		var houses = amplify.store("neighbours")

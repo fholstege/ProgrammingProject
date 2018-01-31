@@ -26,7 +26,6 @@ var line_data_x = []
 var line_data_y = []
 var time_data = []
 var average_data;
-var labels_legend = []
 var table_counter = 0
 
 // function to determine moving average
@@ -81,9 +80,13 @@ String.prototype.splice = function(idx, rem, str) {
 
 window.onload = function(d){
 
+
 amplify.store("changed_map", false)
 amplify.store("changed_data", false)
 
+var loadscreen = d3.select("body").append("div")
+	.attr("class", "loadscreen")
+	.style("text-align", "center")
 
 // get the HTML doc from the Iframe
 var doc = document.getElementById("map_frame").contentDocument
@@ -137,16 +140,44 @@ var svg_bar = d3.select("#barchart").append("svg")
 
 // create svg for the scatterplot
 var svg_scatter = d3.select("#scatter").append("svg")
-.attr("class", "svg-scatter")
+.attr("class", "svg_scatter")
 .attr("width", width_scatter + margin_scatter.left + margin_scatter.right)
 .attr("height", height_scatter + margin_scatter.top + margin_scatter.bottom)
 .append("g")
 .attr("transform",
       "translate(" + margin_scatter.left + "," + margin_scatter.top + ")");
 
+// attach data for legend
+var legend = d3.select("#map").append("svg")
+.attr("width", 300)
+.attr("height", 30)
+.attr("class", "legend")
+
+
+	 // create circles for legend
+	legend.append("circle")
+	  .attr("class", "legend-circle")
+      .attr("r", 10)
+	  .attr("stroke", "black")
+	  .attr("cx", 15)
+	  .attr("cy", 15)
+	  .style("fill", "yellow")
+
+	 // create text for legend
+	var text_legend = legend.append("text")
+	.attr("class", "legend-text")
+    .attr("transform", "translate(30, 20)")
+
 // ensure address is taken from the user
 d3.select("#submitbutton")
 .on("click", function(){
+
+	loadscreen
+	.style("display", "inline")
+	.text("Adres opzoeken...")
+
+	 d3.selectAll("#firstrow, #secondrow")
+	 .style("display","none")
 
 	// get address
 	var address = $("#entry").val()
@@ -169,9 +200,14 @@ d3.select("#submitbutton")
 // after getAddress is finished, call getData  
 function getData(address){
 
+	console.log(address)
+
 		// get token 
         $.getJSON("http://198.211.122.91/plumber/houseAvailable?fullAddress=" + address, function(data) {
                 
+                loadscreen
+				.text("Data ophalen...")
+
                 // use token to get data for address
                 var token = data.token
                 var houses = axios.get(`http://198.211.122.91/${token}neighbours.json`);
@@ -183,17 +219,23 @@ function getData(address){
                     var neighbours = result.data
                     amplify.store("neighbours", neighbours);
 
+                    console.log(neighbours)
+
                     // tell map data is changed
                     amplify.store("changed_data", true)
 
-
                     	// check if map as changed. If yes, change charts
-						setInterval(function(){
+						var check_chart = setInterval(function(){
+
+							console.log(neighbours)
 
 							if (amplify.store("changed_map") == true)
 							{	
-								initialize_charts(neighbours)
+								console.log(neighbours)
+								update_charts(neighbours)
 								amplify.store("changed_map", false)
+								clearInterval(check_chart);
+
 							}
 						}, 5000)
                     })
@@ -341,11 +383,10 @@ function remove_colour_barchart(d){
 	})
 }
 
-
 // creates table
 function update_table(data){
 
-	if (data.length > 5)
+	if (data.length > 4)
 	{
 		data.shift()
 	}
@@ -387,7 +428,6 @@ function update_table(data){
     new_cells
     .enter().append("td")
     .text(function (d) {
-    		console.log(d)
 
 		  	if (d.value == "undefined" || d.value == "NA" || d.value == undefined)
 		  	{
@@ -402,7 +442,6 @@ function update_table(data){
     cells
     .transition().duration(500)
     .text(function (d) {
-    		console.log(d)
 
 		  	if (d.value == "undefined" || d.value == "NA" || d.value == undefined)
 		  	{
@@ -768,7 +807,7 @@ function update_scatter(data, svg, x_variable, y_variable, average_data){
 	      	tip_scatter.hide()
 	      })
 
-	d3.select(".svg-scatter").call(tip_scatter)
+	d3.select(".svg_scatter").call(tip_scatter)
 
 	// add x axis
 
@@ -851,12 +890,6 @@ function update_scatter(data, svg, x_variable, y_variable, average_data){
 	  .attr("class", "scatter-text")
 	  .text(x_variable);
 
-
-	  if ((currentvariable_scatter_x == "woonoppervlak"
-	  	|| currentvariable_scatter_x == "Vraagprijs"
-	  	|| currentvariable_scatter_x == "Prijs per m2")
-	  	&& currentvariable_scatter_y != "Aantal kamers")
-	  {
 	  	// create line
 	  	var line = svg.append('path')
 		.attr('class', 'avg')
@@ -867,13 +900,11 @@ function update_scatter(data, svg, x_variable, y_variable, average_data){
         .duration(2000)
 		.attr('d', curved_line)
 
-	  }
-
 	}
 
 
 
-function create_buttons(houses){
+function create_buttons(){
 
 	// create menu to select variable in barchart
   	var button_bar = d3.select("#barchart").append("div")
@@ -908,17 +939,9 @@ function create_buttons(houses){
           	return d
           })
 
-    // if option is selected, update graph
-  	var option = d3.selectAll("#option_bar")
-    .on("click", function(){
-      // get country clicked by user
-      currentvariable_bar = this.getAttribute("value")
-      update_barchart(barchart_data, svg_bar, currentvariable_bar, houses)
-  })
-
 
 // create menu to select y variable in barchart
-  	var button_scatter_y = d3.select("body").append("div")
+  	var button_scatter_y = d3.select("#scatter").append("div")
       .attr("class", "dropup")
       .attr("id", "menu-scatter-y")
 
@@ -952,18 +975,9 @@ function create_buttons(houses){
           .text(function(d){ return d})
           .attr("value", function(d){ return d})
 
-    // if option is selected, update graph
-  	var option_y = d3.selectAll("#option_scatter_y")
-    .on("click", function(){
-      // get country clicked by user
-      currentvariable_scatter_y = this.getAttribute("value")
-      var average_data = prepare_average_data(houses)
-      update_scatter(houses, svg_scatter, currentvariable_scatter_x, currentvariable_scatter_y, average_data)
-  })
-
 
   // create menu to select y variable in barchart
-  	var button_scatter_x = d3.select("body").append("div")
+  	var button_scatter_x = d3.select("#scatter").append("div")
       .attr("class", "dropup")
       .attr("id", "menu-scatter-x")
 
@@ -994,48 +1008,6 @@ function create_buttons(houses){
           .text(function(d){ return d})
           .attr("value", function(d){ return d})
 
-    // if option is selected, update graph
-  	var option_x = d3.selectAll("#option_scatter_x")
-    .on("click", function(){
-      // get country clicked by user
-      currentvariable_scatter_x = this.getAttribute("value")
-      var average_data = prepare_average_data(houses)
-      update_scatter(houses, svg_scatter, currentvariable_scatter_x, currentvariable_scatter_y, average_data)
-  })
-
-
-
-}
-
-// create legend
-function create_legend(data){
-
-	d3.select(".legend").remove()
-
-	// attach data for legend
-	var legend = d3.select("#map").append("svg")
-	.attr("width", 300)
-    .attr("height", 30)
-    .attr("class", "legend")
-
-    // create circles for legend
-	legend.selectAll("circle")
-	.data(labels_legend)
-	.enter().append("circle")
-	  .attr("class", "legend-circle")
-      .attr("r", 10)
-	  .attr("stroke", "black")
-	  .attr("cx", 15)
-	  .attr("cy", 15)
-	  .style("fill", "yellow")
-
-	 // create text for legend
-	legend.selectAll("text")
-	.data(labels_legend)
-	.enter().append("text")
-	.attr("class", "legend-text")
-    .attr("transform", "translate(30, 20)")
-    .text(function(d){return d})
 
 }
 
@@ -1043,29 +1015,57 @@ function create_legend(data){
 // initialize creation of charts
 function initialize_charts (houses){
 
-
-	houses.forEach(function(d){
-
-		if (d.searched_house == true)
-		{
-			// get data for searched house
-			labels_legend.push(d.searchString)
-		}
-	})
-
-	d3.select(".title").remove()
-
+	// create initial title
 	d3.select("#title")
 	.append("h1")
 	.attr("class", "title")
-	.text("Analyse van " + String(labels_legend[0]))
+	.text("Analyse van huizen")
+
+
+	// create variable for table bar
+   var table = d3.select("#table")
+   .append("table")
+   .attr("class", "table table-hover table-bordered table-lg")
+
+   // create variable for table heads
+   table.append('thead')
+   .attr("class", "thead-inverse")
+
+   table.append('tbody');
+
+    // create table heads
+   d3.select("thead").append("tr")
+   .selectAll('th')
+   .data(variables_table).enter()
+   .append('th')
+   .text(function (column) { return column; });
+
+   	// functions to create initial map
+	create_buttons()
+
+
+   // not show charts
+   d3.selectAll("#firstrow, #secondrow")
+   .style("display", "none")
+
+
+}
+
+function update_charts(houses){
+
+	d3.selectAll("#firstrow, #secondrow")
+   .style("display", "inline")
+
+   loadscreen
+   .style("display", "none")
+
+	table_data.length = 0
+	barchart_data.length = 0
 
 	// attach data to house markers
 	map.selectAll(".marker")
 	.data(houses)
 	.on("click", function(d){
-
-		console.log("TEST")
 
 		// colour house
 		colour_map(d)
@@ -1115,37 +1115,62 @@ function initialize_charts (houses){
 
 	})
 
-	d3.select("table").remove()
+	console.log(houses)
 
-	// create variable for table bar
-   var table = d3.select("#table")
-   .append("table")
-   .attr("class", "table table-hover table-bordered table-lg")
+	var labels_legend;
 
-   // create variable for table heads
-   table.append('thead')
-   .attr("class", "thead-inverse")
+	houses.forEach(function(d){
 
-   table.append('tbody');
+		if (d.searched_house == true)
+		{
+			// get data for searched house
+			labels_legend = d.searchString
+		}
+	})
 
-    // create table heads
-   d3.select("thead").append("tr")
-   .selectAll('th')
-   .data(variables_table).enter()
-   .append('th')
-   .text(function (column) { return column; });
+
+	d3.select("h1")
+	.text("Analyse van " + String(labels_legend))
+
+	text_legend
+    .text(label)
+
+        // if option is selected, update graph
+  	var option_bar = d3.selectAll("#option_bar")
+    .on("click", function(){
+      // get country clicked by user
+      currentvariable_bar = this.getAttribute("value")
+      update_barchart(barchart_data, svg_bar, currentvariable_bar, houses)
+  })
+
+
+        // if option is selected, update graph
+  	var option_y = d3.selectAll("#option_scatter_y")
+    .on("click", function(){
+      // get country clicked by user
+      currentvariable_scatter_y = this.getAttribute("value")
+      var average_data = prepare_average_data(houses)
+      update_scatter(houses, svg_scatter, currentvariable_scatter_x, currentvariable_scatter_y, average_data)
+  })
+
+        // if option is selected, update graph
+  	var option_x = d3.selectAll("#option_scatter_x")
+    .on("click", function(){
+      // get country clicked by user
+      currentvariable_scatter_x = this.getAttribute("value")
+      var average_data = prepare_average_data(houses)
+      update_scatter(houses, svg_scatter, currentvariable_scatter_x, currentvariable_scatter_y, average_data)
+  })
+
 
 	// prepare data for moving average line
 	average_data = prepare_average_data(houses)
 
-	// functions to create initial map
-	create_buttons(houses)
 	update_barchart(barchart_data, svg_bar, currentvariable_bar, houses)
 	update_scatter(houses, svg_scatter, currentvariable_scatter_x, currentvariable_scatter_y, average_data)
-	create_legend(labels_legend)
 	update_table(table_data)
 
-	}
+}
 
 
 
