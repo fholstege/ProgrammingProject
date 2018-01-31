@@ -36,16 +36,17 @@ p{
 	fill:grey;
 }
 
-#menu-scatter-x{
+#menu-scatter-x, #menu-scatter-y{
 	position:absolute;
-	top: 925px;
-	right: 1100px;
+	top: 1210px;
 }
 
 #menu-scatter-y{
-	position:absolute;
-	top: 925px;
 	right: 1000px;
+}
+
+#menu-scatter-x{
+	right:1050;
 }
 
 path {

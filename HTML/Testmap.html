@@ -53,21 +53,47 @@
 
   <div class="row" id="firstrow">
 
-     <div class="col-lg-6" id="map">
+     <div class="col-lg-6" style="border:1px solid #cecece;" id="map">
+
+         <button type="button" class="btn btn-default btn-sm" id="question_barchart"
+          data-toggle="popover" data-placement="bottom" data-content="Klik op huizen om het adres te zien en ze aan de staafdiagram en tabel toe te voegen." aria-describedby="tooltip">
+          <span class="glyphicon glyphicon-question-sign"></span> Uitleg 
+        </button>
     
         <iframe id ="map_frame" class = "map" src="Project.html" height = 350 width = 100%> </iframe>
 
     </div>
 
-    <div class="col-lg-6" style="border:1px solid #cecece;" id="barchart"></div>
+    <div class="col-lg-6" style="border:1px solid #cecece;" id="barchart">
+
+          <button type="button" class="btn btn-default btn-sm" id="question_barchart"
+          data-toggle="popover" data-placement="bottom" data-content="Ga met de muis over staven om waarde te zien, en klik om ze te verwijderen." aria-describedby="tooltip">
+          <span class="glyphicon glyphicon-question-sign"></span> Uitleg 
+        </button>
+
+    </div>
   
   </div>
 
   <div class="row" id="secondrow">
 
-    <div class="col-lg-6" style="border:1px solid #cecece;" id="scatter"></div>
+    <div class="col-lg-6" style="border:1px solid #cecece;" id="scatter">
+        
+        <button type="button" class="btn btn-default btn-sm" id="question_scatter"
+         data-toggle="popover" data-placement="bottom" data-content="Ga met de muis over bollen om waardes huis te zien  De lijn geeft het voortschrijdende gemiddelde weer." aria-describedby="tooltip">
+          <span class="glyphicon glyphicon-question-sign"></span> Uitleg 
+        </button>
 
-    <div class="col-lg-6" id="table"></div>
+    </div>
+
+    <div class="col-lg-6" id="table">
+        
+         <button type="button" class="btn btn-default btn-sm" id="question_barchart"
+          data-toggle="popover" data-placement="bottom" data-content="Klik op huizen om ze uit te tabel te verwijderen. De tabel slaat de laatste vier geklikte huizen op." aria-describedby="tooltip">
+          <span class="glyphicon glyphicon-question-sign"></span> Uitleg 
+        </button>
+
+    </div>
 
   </div>
 

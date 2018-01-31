@@ -7,7 +7,7 @@ var margin_bar = {top: 60, right: 70, bottom: 120, left: 60},
     height_bar = 400 - margin_bar.top - margin_bar.bottom;
 
 // define parameters of the scatterplot
-var margin_scatter = {top: 30, right: 40, bottom: 60, left:80},
+var margin_scatter = {top: 30, right: 50, bottom: 60, left:70},
     width_scatter = 600 - margin_scatter.left - margin_scatter.right,
     height_scatter = 400 - margin_scatter.top - margin_scatter.bottom;
 
@@ -67,7 +67,7 @@ function prepare_average_data(data){
 	})
 
 	// use moving average function
-	var average_data = moving_average(line_data_y, 1)
+	var average_data = moving_average(line_data_y, 3)
 	return average_data
 }
 
@@ -128,6 +128,13 @@ var tip_scatter = d3.tip()
 	  		   String(currentvariable_scatter_x) + ": " + d[currentvariable_scatter_x] + "<br>" +
 	  	       String(currentvariable_scatter_y) + ": " + d[currentvariable_scatter_y]
 	  })
+
+$('[data-toggle="popover"]').popover();
+
+
+
+
+
 
 // create svg for the barchart
 var svg_bar = d3.select("#barchart").append("svg")
@@ -941,7 +948,7 @@ function create_buttons(){
 
 
 // create menu to select y variable in barchart
-  	var button_scatter_y = d3.select("#scatter").append("div")
+  	var button_scatter_y = d3.select("#secondrow").append("div")
       .attr("class", "dropup")
       .attr("id", "menu-scatter-y")
 
@@ -977,7 +984,7 @@ function create_buttons(){
 
 
   // create menu to select y variable in barchart
-  	var button_scatter_x = d3.select("#scatter").append("div")
+  	var button_scatter_x = d3.select("#secondrow").append("div")
       .attr("class", "dropup")
       .attr("id", "menu-scatter-x")
 
@@ -1043,7 +1050,6 @@ function initialize_charts (houses){
    	// functions to create initial map
 	create_buttons()
 
-
    // not show charts
    d3.selectAll("#firstrow, #secondrow")
    .style("display", "none")
@@ -1054,7 +1060,7 @@ function initialize_charts (houses){
 function update_charts(houses){
 
 	d3.selectAll("#firstrow, #secondrow")
-   .style("display", "inline")
+   .style("display", "block")
 
    loadscreen
    .style("display", "none")
