@@ -86,7 +86,6 @@ amplify.store("changed_data", false)
 
 var loadscreen = d3.select("body").append("div")
 	.attr("class", "loadscreen")
-	.style("text-align", "center")
 
 // get the HTML doc from the Iframe
 var doc = document.getElementById("map_frame").contentDocument
@@ -130,11 +129,6 @@ var tip_scatter = d3.tip()
 	  })
 
 $('[data-toggle="popover"]').popover();
-
-
-
-
-
 
 // create svg for the barchart
 var svg_bar = d3.select("#barchart").append("svg")
@@ -207,17 +201,18 @@ initialize_charts()
 // after getAddress is finished, call getData  
 function getData(address){
 
-	console.log(address)
-
 		// get token 
-        $.getJSON("http://198.211.122.91/plumber/houseAvailable?fullAddress=" + address, function(data) {
-                
+        $.getJSON("https://198.211.122.91/plumber/houseAvailable?fullAddress=" + address, function(data) {
+
+        		
                 loadscreen
 				.text("Data ophalen...")
 
                 // use token to get data for address
                 var token = data.token
-                var houses = axios.get(`http://198.211.122.91/${token}neighbours.json`);
+
+                console.log(token)
+                var houses = axios.get(`https://198.211.122.91/${token}neighbours.json`);
 
                 // if data is returned
                 houses.then(function(result){
@@ -246,7 +241,16 @@ function getData(address){
 							}
 						}, 5000)
                     })
-                });
+        }).fail(function(d) {
+                
+                loadscreen
+				.text("Adres niet gevonden")
+				.style("color","red")
+
+				alert("Check of het adres als volgt is ingevuld: Straatnaam huisnummer postcode." + 
+					  "Bijvoorbeeld: Valkreek 56 3079 AN. De zoekfunctie is zowel hoofdletter als spatie gevoelig")
+            })
+
     }
 
 

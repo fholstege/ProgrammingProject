@@ -100,4 +100,7 @@ path {
    width: 100%; //fallback
    width: 100vw;
    height: 400;
+   position: absolute;
+   top: 350px;
+   left: 325px;
 }
