@@ -34,14 +34,13 @@ The fourth component is a barchart. This chart will compare the continuous varia
 
 The above components fulfill the minimum viable product criterion (and the project requirements). If these are fulfilled, new visualisations and other forms of interactivity can potentially be added. The site will be in Dutch, since this is the native language of the customer base of Vastgoed Fonds Nederland. 
 
-## Copyright
+## Acknowledgement
 
-
+The database and the server its on are managed by Menno Schellekens. 
 
 ## Installation 
 
 Due to some constraints on the database, this site cannot function through a github page. Rather, if you are interested in the features of the website, you should clone this repository, and run a local server at its root. 
-
 
 ## Libraries 
 

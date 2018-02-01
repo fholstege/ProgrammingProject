@@ -1,3 +1,15 @@
+/*****
+
+* Name: Floris Holstege
+* Student ID: 12002151
+
+Includes the following functions: 
+
+- functions needed to create moving average line
+- functions to colour the visualisation
+
+*****/
+
 
 // define necessary lists
 var line_data_x = []
@@ -29,7 +41,6 @@ function prepare_average_data(data){
 
     // determine the data for the line
     data.forEach(function(d){
-
         line_data.push({"x": d[currentvariable_scatter_x], "y":d[currentvariable_scatter_y]})
     })
 
@@ -40,7 +51,6 @@ function prepare_average_data(data){
 
     // add data of line to separate lists
     line_data.forEach(function(d){
-
         line_data_x.push(d.x)
         line_data_y.push(d.y)
     })
@@ -62,7 +72,6 @@ function colour_map(data){
 
     map.selectAll(".marker")
     .style("background-color", function(d){
-
         if (d == data)
         {
             return "red"
@@ -82,15 +91,10 @@ function colour_table(data){
 
     d3.selectAll("tr")
     .style("background-color", function(d){
-
         if (d == data)
         {
             return "red"
         }
-        //else if (d.address1 == house[0].address1)
-        //{
-        //  return "yellow"
-        //}
         else
         {
             return "white"
@@ -124,7 +128,6 @@ function colour_barchart(data){
 
     d3.selectAll(".bar")
     .style("fill", function(d){
-
         if (d == data)
         {
             return "red"
@@ -144,7 +147,6 @@ function colour_barchart(data){
 function remove_colour_map(data){
     map.selectAll(".marker")
     .style("background-color", function(d){
-
         if (d.searched_house == true)
         {
             return "yellow"

@@ -1,10 +1,23 @@
+/*****
+
+* Name: Floris Holstege
+* Student ID: 12002151
+
+Defines certain functions needed to initialize the charts. 
+
+*****/
 
 
+// define accessible variables for buttons
+var variables_scatter_x = ["woonoppervlak", "Vraagprijs", "Prijs per m2", "Bouwjaar"]
+var variables_scatter_y = ["woonoppervlak", "Aantal kamers", "Vraagprijs", "Prijs per m2"]
+var variables_bar = ["woonoppervlak", "Aantal kamers", "Vraagprijs", "Prijs per m2", "Bouwjaar"]
+
+
+// create a legend
 function create_legend(){
 
-	console.log("created legend")
-
-	// create legend
+	// create legend div
 	legend = d3.select("#map").append("svg")
 	.attr("width", 300)
 	.attr("height", 30)
@@ -26,6 +39,8 @@ function create_legend(){
 }
 
 
+// create the buttons of the page that need interactivity 
+// buttons that don't require interactivity are defined in the html page
 function create_buttons(){
 
 	// create menu to select variable in barchart
@@ -56,9 +71,7 @@ function create_buttons(){
           .attr("class", "m")
           .attr("id", "option_bar")
           .text(function(d){ return d})
-          .attr("value", function(d){
-          	return d
-          })
+          .attr("value", function(d){return d})
 
 
 // create menu to select y variable in barchart

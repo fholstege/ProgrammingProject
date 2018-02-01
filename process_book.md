@@ -24,7 +24,7 @@ Project proposal passed. Created map with markers, and put this map as iframe on
 Design:  
 Decided to initially depict the houses as grey circles. I personally find having lots of different colours on a single map quite distracting. I knew that other components would require the map to be coloured, so therefore decided to keep the original colour of the houses quite plain. 
 
-[First version map](https://github.com/fholstege/ProgrammingProject/blob/master/doc/pictures_process/first_map.png)
+![First version map](https://github.com/fholstege/ProgrammingProject/blob/master/doc/pictures_process/first_map.png)
 
 Struggles: 
 Initially found it hard to enable the user select elements that were in an Iframe. It requires selecting the HTML of the map within the HTML of the visualisation. 
@@ -37,7 +37,7 @@ Made it possible for users to select houses on Iframe. Handed in Design document
 Design:  
 Decided to colour the barchart steelblue, and make colour houses that are depicted on the barchart with the same colour. 
 
-[First version barchart + map](https://github.com/fholstege/ProgrammingProject/blob/master/doc/pictures_process/map_barchart.png)
+![First version barchart + map](https://github.com/fholstege/ProgrammingProject/blob/master/doc/pictures_process/map_barchart.png)
 
 Struggles: 
 The division of space on the webpage between the map and barchart is a difficult design issue. Making the map smaller allows for a more appealing version of the barchart, but enlarging the map enables the user to see each house clearly.
@@ -48,12 +48,12 @@ Decided to give both a quarter of the page.
 Progress: 
 Added dropdown menu to select variables on the barchart, and added interactive table using bootstrap.
 
-![First version of table](https://github.com/fholstege/ProgrammingProject/blob/master/doc/pictures_process/first_table.png =100x20)
+![First version of table](https://github.com/fholstege/ProgrammingProject/blob/master/doc/pictures_process/first_table.png)
 
 Design:  
 Created dropdown menu in similar colour as the barchart. Dropdown menu slightly overlaps with barchart's svg, but does not hurt how the barchart looks. Made sure to put the button in the upper right corner to not overlay with the bars. 
 
-[Dropdown menu for barchart](https://github.com/fholstege/ProgrammingProject/blob/master/doc/pictures_process/barchart_dropdown.png)
+![Dropdown menu for barchart](https://github.com/fholstege/ProgrammingProject/blob/master/doc/pictures_process/barchart_dropdown.png)
 
 Struggles: 
 Had to change the names of some variables in the dataset to enhance the titles on the X and Y axis. Required some editing of the dataset, but nothing significant. 
@@ -63,7 +63,7 @@ Had to change the names of some variables in the dataset to enhance the titles o
 Progress: 
 Created possibility to track houses with the mouse. Houses will now colour red on both the map and the barchart when a user hovers over their mouse on either a house or a bar. 
 
-[Mouse over on house](https://github.com/fholstege/ProgrammingProject/blob/master/doc/pictures_process/map_marker.png)
+![Mouse over on house](https://github.com/fholstege/ProgrammingProject/blob/master/doc/pictures_process/map_marker.png)
 
 Design:  
 Got some useful feedback from peers on the design. Decided to make houses sligtly bigger, as well as giving each circle depicting a house a black border. 
@@ -76,7 +76,7 @@ My initial plan was to colour houses according to a certain variable e.g make ho
 Progress:
 Added yellow colour for house that the user initially has searched. Made it possible to delete houses from the selection on the map and barchart by clicking on the bars. 
 
-[Legend](https://github.com/fholstege/ProgrammingProject/blob/master/doc/pictures_process/legend.png)
+![Legend](https://github.com/fholstege/ProgrammingProject/blob/master/doc/pictures_process/legend.png)
 
 Design: 
 It is important that the user can track which house they initially searched. Giving it a distinct colour like yellow makes this easy. 
@@ -98,7 +98,7 @@ Added moving average line for scatterplot. Made scatterplot interactive with bot
 Design:
 Considering to remove the moving average line, since it is not very accurate when there are not a lot of observations. However, in the majority of cases more than 30 houses are depicted. In such a case, the moving average line has enough observations to say something about the relationship between particular variables. Therefore, in the majority of cases, the moving average line provides useful insights. 
 
-[Scatter with moving average line](https://github.com/fholstege/ProgrammingProject/blob/master/doc/pictures_process/scatter.png)
+![Scatter with moving average line](https://github.com/fholstege/ProgrammingProject/blob/master/doc/pictures_process/scatter.png)
 
 Struggle: 
 Had to write own function for the moving average line, since there is no standard for D3. First was unable to make a moving average line was on par with the X-axis, but after some thinking managed to get it right. 
@@ -117,7 +117,7 @@ Implemented bootstrap containers to divide the four parts of the visualisation.
 Design: 
 Again, got some useful pointers for design. Circles are now enlarged when the mouse is on them to make it even more clear which one is selected. 
 
-[Division of containers](https://github.com/fholstege/ProgrammingProject/blob/master/doc/pictures_process/allvisualisations.png)
+![Division of containers](https://github.com/fholstege/ProgrammingProject/blob/master/doc/pictures_process/allvisualisations.png)
 
 Struggles: 
 Unable to create a tooltip for the map. Cannot use d3.tip since Mapbox will not depict this. Have to figure out the syntax of Mapbox to create a tooltip with addresses. 
@@ -127,7 +127,7 @@ Unable to create a tooltip for the map. Cannot use d3.tip since Mapbox will not 
 Progress: 
 Managed to create tooltip for the map using Mapbox syntax. 
 
-[https://github.com/fholstege/ProgrammingProject/blob/master/doc/pictures_process/tooltip.png]
+![https://github.com/fholstege/ProgrammingProject/blob/master/doc/pictures_process/tooltip.png]
 
 Struggles:
 Currently when graphs are updated, the entire graph is removed and appended again. This makes transitions not very pretty. Need to rewrite all update functions in order to ensure smooth transitions. 
@@ -174,7 +174,7 @@ Figuring out the syntax regarding API calls in javascript was a bit daunting at 
 Progress: 
 Able to get data of selected houses through typing in an address in the search bar. 
 
-[Searchbar](https://github.com/fholstege/ProgrammingProject/blob/master/doc/pictures_process/searchbar.png)
+![Searchbar](https://github.com/fholstege/ProgrammingProject/blob/master/doc/pictures_process/searchbar.png)
 
 Struggles: 
 Worked most of the day on making the HTML page of the map respond to an action on the HTML page of the visualisation. The pretty way to do this would be using a backend, for example the flask framework of Python. Given time constraints, I decided to use amplify.js to I) pass the data of a house to the map HTML and II) to make the map respond to users typing in an address. This is however, a work around, and after handing in the project I will likely take the time to do this in a less crude way. 
@@ -192,7 +192,7 @@ Decided to keep the overall design of the website quite simple, with a white bac
 Progress: 
 Added question buttons to the page, so that users can get instructions. Debugged the website by trying a wide variety of houses, and multitude of combinations of house queries. Enhanced code, for example a callback when the address of the house cannot be found. 
 
-[Current outlook of website](https://github.com/fholstege/ProgrammingProject/blob/master/doc/pictures_process/final_version.png)
+![Current outlook of website](https://github.com/fholstege/ProgrammingProject/blob/master/doc/pictures_process/final_version.png)
 
 ^ above is a zoomed out version, causing it to look slightly strange. 
 
