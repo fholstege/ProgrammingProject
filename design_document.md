@@ -1,8 +1,10 @@
-# Design Document 
+# Design Document *
 
 This document aims to highlight the technical components of my project. 
 It will do so by going over each component of the visualisation, indicating possible challenges. 
-Advisable to first read the README.md to understand the project, and the purpose of each component. 
+Advisable to first read the README.md to understand the project, and the purpose of each component.
+
+* This document was written before I started coding, and thus the code overview no longer reflects the project. For a more detailed and recent overview, check out REPORT.md
 
 ## The database
 

@@ -3,14 +3,14 @@
 * Name: Floris Holstege
 * Student ID: 12002151
 
-File that ensures all necessary functions are called on. 
+File that ensures all necessary functions are called on.
 
 *****/
 
 
 window.onload = function(d){
 
-// default settings 
+// default settings
 amplify.store("changed_map", false)
 amplify.store("changed_data", false)
 
@@ -18,7 +18,7 @@ amplify.store("changed_data", false)
 var doc = document.getElementById("map_frame").contentDocument
 map = d3.select(doc)
 
-// ensure question buttons are activated 
+// ensure question buttons are activated
 $('[data-toggle="popover"]').popover();
 
 // create loadscreen
@@ -49,8 +49,8 @@ d3.select("#submitbutton")
 	var address = $("#entry").val()
 
 	// splice address for API call
-	for (var i = 0; i < address.length; i++) 
-     	{   
+	for (var i = 0; i < address.length; i++)
+     	{
             if (address[i] === " ")
             {
                 address = address.splice(i,1, "%20")
@@ -58,22 +58,22 @@ d3.select("#submitbutton")
         }
 
     // get data based on address
-    getData(address)
+    get_data(address)
 })
 
-// after getAddress is finished, call getData  
-function getData(address){
+// after getAddress is finished, call get_data
+function get_data(address){
 
-		// get token 
+		// get token
         $.getJSON("http://198.211.122.91/plumber/houseAvailable?fullAddress=" + address, function(data) {
 
         		// tell user data is being retrieved
                 loadscreen
 				.text("Data ophalen...")
 
-				// if no data, alert the user. 
+				// if no data, alert the user.
 				if (data.available == false)
-				{					
+				{
 					loadscreen
 					.text("Huis niet in database")
 					.style("color","red")
@@ -87,7 +87,7 @@ function getData(address){
                 // if data is returned
                 houses.then(function(result){
 
-                	// store data for the map  
+                	// store data for the map
                     var neighbours = result.data
                     amplify.store("neighbours", neighbours);
 
@@ -101,7 +101,7 @@ function getData(address){
 							console.log(neighbours)
 
 							if (amplify.store("changed_map") == true)
-							{	
+							{
 								console.log(neighbours)
 								update_charts(neighbours)
 								amplify.store("changed_map", false)
@@ -113,7 +113,7 @@ function getData(address){
 
         // if no address, tell user address not found
         }).fail(function(d) {
-                
+
                 loadscreen
 				.text("Adres niet gevonden")
 				.style("color","red")
@@ -121,7 +121,7 @@ function getData(address){
 
     }
 
-// update charts 
+// update charts
 function update_charts(houses){
 
 	// remove old data
@@ -139,7 +139,7 @@ function update_charts(houses){
 		// update table and barchart
 		if (table_data.indexOf(d) == -1)
 		{
-			table_data.push(d)		
+			table_data.push(d)
 			update_table(table_data)
 		}
 
@@ -148,7 +148,7 @@ function update_charts(houses){
 		{
 			barchart_data.push(d)
 			update_barchart(barchart_data, svg_bar, currentvariable_bar, houses)
-			
+
 		}
 	})
 	.on("mouseover", function(d, i){
@@ -192,7 +192,7 @@ function update_charts(houses){
 		}
 	})
 
-	// change title 
+	// change title
 	d3.select("h1")
 	.text("Analyse van " + String(labels_legend))
 
@@ -231,14 +231,13 @@ function update_charts(houses){
 	// prepare data for moving average line
 	average_data = prepare_average_data(houses)
 
-	// update charts 
+	// update charts
 	update_barchart(barchart_data, svg_bar, currentvariable_bar, houses)
 	update_scatter(houses, svg_scatter, currentvariable_scatter_x, currentvariable_scatter_y, average_data)
 	update_table(table_data)
 
 	loadscreen.transition().duration(2000)
-	.style("opacity", 0.0)
-   //.style("display","none")
+	.style("display","none")
 
 	d3.selectAll("#firstrow, #secondrow")
    .style("display","block")

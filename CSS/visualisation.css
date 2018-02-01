@@ -1,3 +1,5 @@
+
+/* centering both h1 and p */
 h1{
 	text-align: center;
 }
@@ -5,10 +7,13 @@ h1{
 p{
 	text-align: center;
 }
+
+/* define padding of containers */
 .container{
 	padding: 0;
 }
 
+/* attributes of form and submit button */
 .form-group{
 	width: 75% !important;
 }
@@ -19,21 +24,11 @@ p{
 	right:80px;
 }
 
-/* attributes for the position of the button */
-
+/* attributes for the position of different menus */
 .menu-bar{
 	position:absolute;
 	top:10px;
 	right:100px;
-}
-
-.table{
- width: 100% !important;
- border: 2px !important;
-}
-
-.scatter-circle{
-	fill:grey;
 }
 
 #menu-scatter-x, #menu-scatter-y{
@@ -49,11 +44,25 @@ p{
 	right:1050;
 }
 
+/* define attributes moving average line */
 path {
     stroke: black;
     fill: none;
 }
 
+/* define attributes table */
+.table{
+ width: 100% !important;
+ border: 2px !important;
+}
+
+
+/* filling of circles in scatter */
+.scatter-circle{
+	fill:grey;
+}
+
+/* define position legend */
 .legend{
 	position:absolute;
 	top:395px;
@@ -90,12 +99,13 @@ path {
      left: 0;
 }
 
+/* text of loadscreen */
 .instructions, .loadscreen{
 	font-size:50px;
 	opacity:0.5;
 }
 
-
+/* attributes loadscreen */
 .loadscreen{
    width: 100%; //fallback
    width: 100vw;
@@ -104,15 +114,11 @@ path {
    left:350px;
 }
 
+/* position instructions button searchbar */
 #question_search{
 	position: absolute;
 	top:35px;
 	left:-60px;
 }
 
-/*#question_map{
-	position: absolute;
-	top:395px;
-	left:50px;
 
-}

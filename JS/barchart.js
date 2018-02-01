@@ -3,21 +3,21 @@
 * Name: Floris Holstege
 * Student ID: 12002151
 
-Creates the barchart, and defines update function. 
+Creates the barchart, and defines update function.
 
 *****/
 
 // define parameters of barchart
-var margin_bar = {top: 60, right: 70, bottom: 120, left: 60},
+var margin_bar = {top: 60, right: 80, bottom: 120, left: 60},
     width_bar = 600 - margin_bar.left - margin_bar.right,
     height_bar = 400 - margin_bar.top - margin_bar.bottom;
 
-// create necessary list 
+// create necessary list
 var barchart_data = []
 var currentvariable_bar = "Aantal kamers"
 var time_data = []
 
-// creates static elements of barchart 
+// creates static elements of barchart
 function draw_barchart(){
 
 	// parse time for when time variable is used
@@ -35,7 +35,7 @@ function draw_barchart(){
 
 	// create tooltip for the barchart
 	tip_bar = d3.tip()
-		  .attr('class', 'd3-tip')
+		  .attr("class", "d3-tip")
 		  .offset([-5,0])
 		  .html(function(d) {
 		  	return "<strong>" + d[currentvariable_bar] + "</strong>"
@@ -52,7 +52,7 @@ function draw_barchart(){
 
 	// add text for y - axis
 	svg_bar.append("text")
-		.attr("transform", "translate(-50," +  
+		.attr("transform", "translate(-50," +
 			 (height_bar+margin_bar.bottom)/2 + ") rotate(-90)")
 		.attr("class", "bar_text")
 
@@ -62,7 +62,7 @@ function draw_barchart(){
 // update barchart
 function update_barchart(data, svg, variable, houses){
 
-	// remove previous axis and text 
+	// remove previous axis and text
 	var axis = svg.selectAll(".axis")
 					.remove()
 
@@ -77,7 +77,7 @@ function update_barchart(data, svg, variable, houses){
 
   	// add text for y - axis
 	svg.append("text")
-	.attr("transform", "translate(-50," +  
+	.attr("transform", "translate(-50," +
 		 (height_bar+margin_bar.bottom)/2 + ") rotate(-90)")
 	.attr("class", "bar_text")
 	.text(variable)
@@ -94,16 +94,16 @@ function update_barchart(data, svg, variable, houses){
     	y_bar_time.domain([d3.max(time_data), minimum])
     }
 
-    // attach data 
+    // attach data
   	var bars = svg.selectAll(".bar").data(data)
 
-  	// exit removed bars 
+  	// exit removed bars
   	bars.exit()
     .transition()
       .duration(300)
       .attr("y", y_bar(0))
     .attr("height", height_bar - y_bar(0))
-    .style('fill-opacity', 1e-6)
+    .style("fill-opacity", 1e-6)
     .remove()
 
      // add bars to barchart
@@ -153,7 +153,7 @@ function update_barchart(data, svg, variable, houses){
       	}
       })
 
-    // create transition 
+    // create transition
     bars
     .transition().duration(300)
     .attr("x", function(d) {
@@ -252,7 +252,7 @@ function update_barchart(data, svg, variable, houses){
 	.text(variable)
 
 
-	// create y-axis 
+	// create y-axis
 	// if "bouwjaar", change scale to reflect time
 	if (variable == "Bouwjaar")
 	{
@@ -261,19 +261,19 @@ function update_barchart(data, svg, variable, houses){
 	  	.transition().duration(1000)
 	      .call(d3.axisLeft(y_bar_time))
 	}
-	// if "Aantal kamers", change scale for accuracy 
+	// if "Aantal kamers", change scale for accuracy
 	else if (variable == "Aantal kamers")
 	{
 		svg.append("g")
 	  	.attr("class", "axis")
 	  	.transition().duration(1000)
 	      .call(d3.axisLeft(y_bar)
-	      .ticks(d3.max(data, function(d) { 
-	      	return d[currentvariable_bar]; 
+	      .ticks(d3.max(data, function(d) {
+	      	return d[currentvariable_bar];
 	      }))
 	      .tickFormat(d3.format("d")));
 	}
-	// otherwise, create regular y-axis 
+	// otherwise, create regular y-axis
 	else
 	{
 		svg.append("g")
