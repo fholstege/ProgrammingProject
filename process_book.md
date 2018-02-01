@@ -1,8 +1,11 @@
 # Processbook 
 
 This document describes my daily progress for the project. It will contain for each day: 
-I) Summaries of the work done each day. 
-II) Contemplations about the design of the project. 
+
+I) Summaries of the work done each day.
+
+II) Contemplations about the design of the project.
+
 III) Descriptions of any significant struggles that come up during the project. 
 
 ### Day 1 
@@ -21,7 +24,7 @@ Project proposal passed. Created map with markers, and put this map as iframe on
 Design:  
 Decided to initially depict the houses as grey circles. I personally find having lots of different colours on a single map quite distracting. I knew that other components would require the map to be coloured, so therefore decided to keep the original colour of the houses quite plain. 
 
-[](https://github.com/fholstege/ProgrammingProject/blob/master/doc/pictures_process/first_map.png)
+[first map](https://github.com/fholstege/ProgrammingProject/blob/master/doc/pictures_process/first_map.png)
 
 Struggles: 
 Initially found it hard to enable the user select elements that were in an Iframe. It requires selecting the HTML of the map within the HTML of the visualisation. 
@@ -34,7 +37,7 @@ Made it possible for users to select houses on Iframe. Handed in Design document
 Design:  
 Decided to colour the barchart steelblue, and make colour houses that are depicted on the barchart with the same colour. 
 
-[](https://github.com/fholstege/ProgrammingProject/blob/master/doc/pictures_process/map_barchart.png)
+[barchart + map](https://github.com/fholstege/ProgrammingProject/blob/master/doc/pictures_process/map_barchart.png)
 
 Struggles: 
 The division of space on the webpage between the map and barchart is a difficult design issue. Making the map smaller allows for a more appealing version of the barchart, but enlarging the map enables the user to see each house clearly.
@@ -45,7 +48,7 @@ Decided to give both a quarter of the page.
 Progress: 
 Added dropdown menu to select variables on the barchart, and added interactive table using bootstrap.
 
-[](https://github.com/fholstege/ProgrammingProject/blob/master/doc/pictures_process/first_table.png)
+[table](https://github.com/fholstege/ProgrammingProject/blob/master/doc/pictures_process/first_table.png)
 
 Design:  
 Created dropdown menu in similar colour as the barchart. Dropdown menu slightly overlaps with barchart's svg, but does not hurt how the barchart looks. Made sure to put the button in the upper right corner to not overlay with the bars. 
