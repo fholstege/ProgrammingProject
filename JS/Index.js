@@ -98,11 +98,8 @@ function get_data(address){
                     	// check if map as changed. If yes, change charts
 						var check_chart = setInterval(function(){
 
-							console.log(neighbours)
-
 							if (amplify.store("changed_map") == true)
 							{
-								console.log(neighbours)
 								update_charts(neighbours)
 								amplify.store("changed_map", false)
 								clearInterval(check_chart);
