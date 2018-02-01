@@ -5,7 +5,10 @@ h1{
 }
 
 p{
-	text-align: center;
+	text-align: left;
+	position: absolute;
+	top: 5px;
+	left: 20px;
 }
 
 /* define padding of containers */
