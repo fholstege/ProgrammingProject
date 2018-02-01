@@ -56,8 +56,8 @@ path {
 
 .legend{
 	position:absolute;
-	top:365px;
-	left: 60px;
+	top:395px;
+	left: 100px;
 }
 
 
@@ -99,8 +99,20 @@ path {
 .loadscreen{
    width: 100%; //fallback
    width: 100vw;
-   height: 400;
+   width: 100%; 
    position: absolute;
-   top: 350px;
-   left: 325px;
+   left:350px;
+}
+
+#question_search{
+	position: absolute;
+	top:35px;
+	left:-60px;
+}
+
+/*#question_map{
+	position: absolute;
+	top:395px;
+	left:50px;
+
 }

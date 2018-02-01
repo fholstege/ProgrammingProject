@@ -1,6 +1,5 @@
 
 
-
 // define parameters of barchart
 var margin_bar = {top: 60, right: 70, bottom: 120, left: 60},
     width_bar = 600 - margin_bar.left - margin_bar.right,
@@ -25,8 +24,7 @@ var table_data = []
 var line_data_x = []
 var line_data_y = []
 var time_data = []
-var average_data;
-var table_counter = 0
+
 
 // function to determine moving average
 function moving_average(data, neighbors) {
@@ -86,6 +84,8 @@ amplify.store("changed_data", false)
 
 var loadscreen = d3.select("body").append("div")
 	.attr("class", "loadscreen")
+	.style("display", "none")
+	.style("color","grey")
 
 // get the HTML doc from the Iframe
 var doc = document.getElementById("map_frame").contentDocument
@@ -148,7 +148,7 @@ var svg_scatter = d3.select("#scatter").append("svg")
 .attr("transform",
       "translate(" + margin_scatter.left + "," + margin_scatter.top + ")");
 
-// attach data for legend
+// create legend
 var legend = d3.select("#map").append("svg")
 .attr("width", 300)
 .attr("height", 30)
@@ -160,21 +160,24 @@ var legend = d3.select("#map").append("svg")
 	  .attr("class", "legend-circle")
       .attr("r", 10)
 	  .attr("stroke", "black")
-	  .attr("cx", 15)
+	  .attr("cx", 35)
 	  .attr("cy", 15)
 	  .style("fill", "yellow")
 
 	 // create text for legend
 	var text_legend = legend.append("text")
 	.attr("class", "legend-text")
-    .attr("transform", "translate(30, 20)")
+    .attr("transform", "translate(50, 20)")
 
 // ensure address is taken from the user
 d3.select("#submitbutton")
 .on("click", function(){
 
+
 	loadscreen
+	.style("opacity", 0.5)
 	.style("display", "inline")
+	.style("color", "grey")
 	.text("Adres opzoeken...")
 
 	 d3.selectAll("#firstrow, #secondrow")
@@ -202,17 +205,26 @@ initialize_charts()
 function getData(address){
 
 		// get token 
-        $.getJSON("https://198.211.122.91/plumber/houseAvailable?fullAddress=" + address, function(data) {
+        $.getJSON("http://198.211.122.91/plumber/houseAvailable?fullAddress=" + address, function(data) {
 
         		
                 loadscreen
 				.text("Data ophalen...")
 
+				if (data.available == false)
+				{
+					alert("Dit huis is nog niet toegevoegd aan de database. Probeer een ander huis")
+					
+					loadscreen
+					.text("Huis niet in database")
+					.style("color","red")
+
+				}
+
                 // use token to get data for address
                 var token = data.token
+                var houses = axios.get(`http://198.211.122.91/${token}neighbours.json`);
 
-                console.log(token)
-                var houses = axios.get(`https://198.211.122.91/${token}neighbours.json`);
 
                 // if data is returned
                 houses.then(function(result){
@@ -220,8 +232,6 @@ function getData(address){
                 	// store data for the map  
                     var neighbours = result.data
                     amplify.store("neighbours", neighbours);
-
-                    console.log(neighbours)
 
                     // tell map data is changed
                     amplify.store("changed_data", true)
@@ -241,14 +251,12 @@ function getData(address){
 							}
 						}, 5000)
                     })
+
         }).fail(function(d) {
                 
                 loadscreen
 				.text("Adres niet gevonden")
 				.style("color","red")
-
-				alert("Check of het adres als volgt is ingevuld: Straatnaam huisnummer postcode." + 
-					  "Bijvoorbeeld: Valkreek 56 3079 AN. De zoekfunctie is zowel hoofdletter als spatie gevoelig")
             })
 
     }
@@ -792,10 +800,6 @@ function update_scatter(data, svg, x_variable, y_variable, average_data){
 			}
 	      })
 
-
-
-
-
 	svg.selectAll(".scatter-circle")
 	      .on("mouseover", function(d){
 	      	colour_map(d)
@@ -843,8 +847,6 @@ function update_scatter(data, svg, x_variable, y_variable, average_data){
 	}
 
 	// add y axis
-
-
 	if (y_variable == "Aantal kamers")
 	{
 		svg.append("g")
@@ -911,7 +913,7 @@ function update_scatter(data, svg, x_variable, y_variable, average_data){
         .duration(2000)
 		.attr('d', curved_line)
 
-	}
+}
 
 
 
@@ -944,7 +946,6 @@ function create_buttons(){
           .append("a")
           .attr("class", "m")
           .attr("id", "option_bar")
-          .attr("href", "#top")
           .text(function(d){ return d})
           .attr("value", function(d){
           	return d
@@ -1024,14 +1025,13 @@ function create_buttons(){
 
 
 // initialize creation of charts
-function initialize_charts (houses){
+function initialize_charts (){
 
 	// create initial title
 	d3.select("#title")
 	.append("h1")
 	.attr("class", "title")
 	.text("Analyse van huizen")
-
 
 	// create variable for table bar
    var table = d3.select("#table")
@@ -1062,12 +1062,6 @@ function initialize_charts (houses){
 }
 
 function update_charts(houses){
-
-	d3.selectAll("#firstrow, #secondrow")
-   .style("display", "block")
-
-   loadscreen
-   .style("display", "none")
 
 	table_data.length = 0
 	barchart_data.length = 0
@@ -1179,6 +1173,13 @@ function update_charts(houses){
 	update_barchart(barchart_data, svg_bar, currentvariable_bar, houses)
 	update_scatter(houses, svg_scatter, currentvariable_scatter_x, currentvariable_scatter_y, average_data)
 	update_table(table_data)
+
+	loadscreen.transition().duration(2000)
+	.style("opacity", 0.0)
+   //.style("display","none")
+
+	d3.selectAll("#firstrow, #secondrow")
+   .style("display","block")
 
 }
 
