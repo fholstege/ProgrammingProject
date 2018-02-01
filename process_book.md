@@ -48,7 +48,7 @@ Decided to give both a quarter of the page.
 Progress: 
 Added dropdown menu to select variables on the barchart, and added interactive table using bootstrap.
 
-[First version of table](https://github.com/fholstege/ProgrammingProject/blob/master/doc/pictures_process/first_table.png)
+![First version of table](https://github.com/fholstege/ProgrammingProject/blob/master/doc/pictures_process/first_table.png)
 
 Design:  
 Created dropdown menu in similar colour as the barchart. Dropdown menu slightly overlaps with barchart's svg, but does not hurt how the barchart looks. Made sure to put the button in the upper right corner to not overlay with the bars. 
