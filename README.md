@@ -6,6 +6,8 @@
 To finish my minor in programming, I am working on a project for the month of January.  
 This repository will include my progress and ultimately display the final result. 
 
+Link to Product Demo: https://youtu.be/HrYxJeYMWLQ
+
 ## The project 
 
 The visualisation aims to inform consumers about chosen variables that they deem important for the decision to buy a house. It will do so through an interactive map, accompanied by several graphs. 
